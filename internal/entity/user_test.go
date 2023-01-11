@@ -21,5 +21,4 @@ func TestUserValidatePassword(t *testing.T) {
 	assert.True(t, user.ValidatePassword("expense"))
 	assert.False(t, user.ValidatePassword("control"))
 	assert.NotEqual(t, user.Password, "expense")
-
 }
