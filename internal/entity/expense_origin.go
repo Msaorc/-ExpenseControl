@@ -6,11 +6,11 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/pkg/entity"
 )
 
-var ErrDescriptionIsRequired = errors.New("description is required")
+var ErrDescriptionIsRequiredExOrigin = errors.New("description is required")
 
 type ExpenseOrigin struct {
-	ID          entity.ID
-	Description string
+	ID          entity.ID `json:"id"`
+	Description string    `json:"description"`
 }
 
 func NewExpenseOrigin(description string) (*ExpenseOrigin, error) {
@@ -27,7 +27,7 @@ func NewExpenseOrigin(description string) (*ExpenseOrigin, error) {
 
 func (ex *ExpenseOrigin) validate() error {
 	if ex.Description == "" {
-		return ErrDescriptionIsRequired
+		return ErrDescriptionIsRequiredExOrigin
 	}
 	return nil
 }
