@@ -7,9 +7,11 @@ import (
 )
 
 var ErrExpenseLevelDescriptionIsRequired = errors.New("ExpenseLevel: Description is Required")
+var ErrExpenseLevelEntityIDIsRequired = errors.New("ExpenseLevel: ID is Required")
+var ErrExpenseLevelEntityIDIsInvalid = errors.New("ExpenseLevel: ID is Invalid")
 
 type ExpenseLevel struct {
-	ID          entity.ID `json:"id'`
+	ID          entity.ID `json:"id"`
 	Description string    `json:"description"`
 }
 
@@ -26,6 +28,12 @@ func NewExpenseLevel(description string) (*ExpenseLevel, error) {
 }
 
 func (ex *ExpenseLevel) validate() error {
+	if ex.ID.String() == "" {
+		return ErrExpenseLevelEntityIDIsRequired
+	}
+	if _, err := entity.ParseID(ex.ID.String()); err != nil {
+		return ErrExpenseLevelEntityIDIsInvalid
+	}
 	if ex.Description == "" {
 		return ErrExpenseLevelDescriptionIsRequired
 	}

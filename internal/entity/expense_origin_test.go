@@ -18,7 +18,7 @@ func TestExpenseOriginWhenDescriptionIsRequired(t *testing.T) {
 	exOrigin, err := NewExpenseOrigin("")
 	assert.Nil(t, exOrigin)
 	assert.NotNil(t, err)
-	assert.Equal(t, ErrDescriptionIsRequiredExOrigin, err)
+	assert.Equal(t, ErrExpenseOriginEntityDescriptionIsRequired, err)
 }
 
 func TestExpenseOriginValidate(t *testing.T) {

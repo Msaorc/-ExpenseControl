@@ -6,7 +6,9 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/pkg/entity"
 )
 
-var ErrDescriptionIsRequiredExOrigin = errors.New("description is required")
+var ErrExpenseOriginEntityDescriptionIsRequired = errors.New("ExpenseOrigin: description is required")
+var ErrExpenseOriginEntityIDIsRequired = errors.New("ExpenseOrigin: ID is required")
+var ErrExpenseOriginEntityIDIsInvalid = errors.New("ExpenseOrigin: ID is required")
 
 type ExpenseOrigin struct {
 	ID          entity.ID `json:"id"`
@@ -26,8 +28,14 @@ func NewExpenseOrigin(description string) (*ExpenseOrigin, error) {
 }
 
 func (ex *ExpenseOrigin) validate() error {
+	if ex.ID.String() == "" {
+		return ErrExpenseOriginEntityIDIsRequired
+	}
+	if _, err := entity.ParseID(ex.ID.String()); err != nil {
+		return ErrExpenseOriginEntityIDIsInvalid
+	}
 	if ex.Description == "" {
-		return ErrDescriptionIsRequiredExOrigin
+		return ErrExpenseOriginEntityDescriptionIsRequired
 	}
 	return nil
 }
