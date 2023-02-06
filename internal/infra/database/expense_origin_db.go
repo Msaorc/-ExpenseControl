@@ -17,19 +17,6 @@ func (eo *ExpenseOrigin) Create(expenserOrigin *entity.ExpenseOrigin) error {
 	return eo.DB.Create(expenserOrigin).Error
 }
 
-// func (eo *ExpenseOrigin) FindAll(page, limit int, sort string) ([]entity.Expense, error) {
-// 	var expenseOrigins []entity.Expense
-// 	var err error
-// 	if sort != "" && sort != "asc" && sort != "desc" {
-// 		sort = "asc"
-// 	}
-// 	if page >= 0 && limit >= 0 {
-// 		err = eo.DB.Limit(limit).Offset((page - 1) * limit).Order("description " + sort).Find(expenseOrigins).Error
-// 		return expenseOrigins, err
-// 	}
-// 	return nil, nil
-// }
-
 func (eo *ExpenseOrigin) FindAll() ([]entity.ExpenseOrigin, error) {
 	var expenseOrigins []entity.ExpenseOrigin
 	err := eo.DB.Find(&expenseOrigins).Error
