@@ -44,10 +44,10 @@ func TestFindExpenseLevelDBByID(t *testing.T) {
 	assert.Nil(t, err)
 	err = expenseLevelDB.Create(expenseLevel)
 	assert.Nil(t, err)
-	expenseLeveblyId, err := expenseLevelDB.FindByID(expenseLevel.ID.String())
+	expenseLevelbyId, err := expenseLevelDB.FindByID(expenseLevel.ID.String())
 	assert.Nil(t, err)
-	assert.NotNil(t, expenseLeveblyId)
-	assert.Equal(t, expenseLevel.Description, expenseLeveblyId.Description)
+	assert.NotNil(t, expenseLevelbyId)
+	assert.Equal(t, expenseLevel.Description, expenseLevelbyId.Description)
 }
 
 func TestUpdateExpenseLevel(t *testing.T) {
