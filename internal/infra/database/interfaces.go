@@ -13,6 +13,14 @@ type ExpenseOriginInterface interface {
 	Create(expenserOrigin *entity.ExpenseOrigin) error
 	FindAll() ([]entity.ExpenseOrigin, error)
 	FindById(id string) (*entity.ExpenseOrigin, error)
-	Update(expense *entity.ExpenseOrigin, id string) error
+	Update(expenseOrigin *entity.ExpenseOrigin, id string) error
+	Delete(id string) error
+}
+
+type ExpenseLevelInterface interface {
+	Create(expenseLevel *entity.ExpenseLevel) error
+	FindAll() ([]entity.ExpenseLevel, error)
+	FindById(id string) (*entity.ExpenseLevel, error)
+	Update(expenseLevel *entity.ExpenseLevel, id string) error
 	Delete(id string) error
 }

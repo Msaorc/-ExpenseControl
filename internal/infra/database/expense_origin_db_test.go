@@ -6,19 +6,7 @@ import (
 
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
-
-func CreateTableExpenseOriginAndConnectDB() *ExpenseOrigin {
-	db, err := gorm.Open(sqlite.Open("file:test.db"), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	db.Migrator().DropTable(entity.ExpenseOrigin{})
-	db.AutoMigrate(entity.ExpenseOrigin{})
-	return NewExpenseOrigin(db)
-}
 
 func TestCreateExpenseOriginDB(t *testing.T) {
 	db := CreateTableAndConnectionBD(entity.ExpenseOrigin{})
