@@ -11,7 +11,7 @@ import (
 )
 
 func CreateTableExpenseOriginAndConnectDB() *ExpenseOrigin {
-	db, err := gorm.Open(sqlite.Open("file:expense.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("file:test.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +21,8 @@ func CreateTableExpenseOriginAndConnectDB() *ExpenseOrigin {
 }
 
 func TestCreateExpenseOriginDB(t *testing.T) {
-	expenseOriginDB := CreateTableExpenseOriginAndConnectDB()
+	db := CreateTableAndConnectionBD(entity.ExpenseOrigin{})
+	expenseOriginDB := NewExpenseOrigin(db)
 	expenseOrigin, err := entity.NewExpenseOrigin("CreditCard")
 	assert.Nil(t, err)
 	err = expenseOriginDB.Create(expenseOrigin)
@@ -32,7 +33,8 @@ func TestCreateExpenseOriginDB(t *testing.T) {
 }
 
 func TestFindAllExpenseOrigin(t *testing.T) {
-	expenseOriginDB := CreateTableExpenseOriginAndConnectDB()
+	db := CreateTableAndConnectionBD(entity.ExpenseOrigin{})
+	expenseOriginDB := NewExpenseOrigin(db)
 	for i := 1; i < 4; i++ {
 		expenseOrigin, err := entity.NewExpenseOrigin(fmt.Sprintf("Ticket %d", i))
 		assert.Nil(t, err)
@@ -49,7 +51,8 @@ func TestFindAllExpenseOrigin(t *testing.T) {
 }
 
 func TestFindExpenseOriginByID(t *testing.T) {
-	expenseOriginDB := CreateTableExpenseOriginAndConnectDB()
+	db := CreateTableAndConnectionBD(entity.ExpenseOrigin{})
+	expenseOriginDB := NewExpenseOrigin(db)
 	expenseOrigin, err := entity.NewExpenseOrigin("Pix")
 	assert.Nil(t, err)
 	err = expenseOriginDB.Create(expenseOrigin)
@@ -61,7 +64,8 @@ func TestFindExpenseOriginByID(t *testing.T) {
 }
 
 func TestUpdateExpenseOrigin(t *testing.T) {
-	expenseOriginDB := CreateTableExpenseOriginAndConnectDB()
+	db := CreateTableAndConnectionBD(entity.ExpenseOrigin{})
+	expenseOriginDB := NewExpenseOrigin(db)
 	expenseOrigin, err := entity.NewExpenseOrigin("Ticket")
 	assert.Nil(t, err)
 	err = expenseOriginDB.Create(expenseOrigin)
@@ -73,7 +77,8 @@ func TestUpdateExpenseOrigin(t *testing.T) {
 }
 
 func TestDeleteExpenseOrigin(t *testing.T) {
-	expenseOriginDB := CreateTableExpenseOriginAndConnectDB()
+	db := CreateTableAndConnectionBD(entity.ExpenseOrigin{})
+	expenseOriginDB := NewExpenseOrigin(db)
 	expenseOrigin, err := entity.NewExpenseOrigin("Ticket")
 	assert.Nil(t, err)
 	err = expenseOriginDB.Create(expenseOrigin)

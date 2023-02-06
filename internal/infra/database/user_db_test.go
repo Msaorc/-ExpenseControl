@@ -5,19 +5,13 @@ import (
 
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func TestCreateUser(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file:test.db"), &gorm.Config{})
-	if err != nil {
-		t.Error(err)
-	}
-	db.AutoMigrate(&entity.User{})
+	db := CreateTableAndConnectionBD(entity.User{})
+	userDB := NewUserDB(db)
 	user, _ := entity.NewUser("Marcos Augusto", "marcos@email.com", "200")
-	userDB := NewUser(db)
-	err = userDB.Create(user)
+	err := userDB.Create(user)
 	assert.Nil(t, err)
 	var userFinded entity.User
 
@@ -28,16 +22,12 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, user.Email, userFinded.Email)
 	assert.NotNil(t, userFinded.Password)
 }
- 
+
 func TestFindByEmail(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open("file:test.db"), &gorm.Config{})
-	if err != nil {
-		t.Error(err)
-	}
-	db.AutoMigrate(&entity.User{})
+	db := CreateTableAndConnectionBD(entity.User{})
+	userDB := NewUserDB(db)
 	user, _ := entity.NewUser("Marcos Augusto", "email@email.com", "200")
-	userDB := NewUser(db)
-	err = userDB.Create(user)
+	err := userDB.Create(user)
 	assert.Nil(t, err)
 	userFindByEmail, err := userDB.FindByEmail(user.Email)
 	assert.Nil(t, err)
