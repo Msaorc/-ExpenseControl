@@ -45,6 +45,16 @@ func NewExpenseOriginHandler(db database.ExpenseOriginInterface) *ExpenseOriginl
 	}
 }
 
+type ExpenseHandler struct {
+	ExpenseDB database.ExpenseInterface
+}
+
+func NewExpenseHandler(db database.ExpenseInterface) *ExpenseHandler {
+	return &ExpenseHandler{
+		ExpenseDB: db,
+	}
+}
+
 func (elh *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http.Request) {
 	var expenseLevel dto.ExepnseLevel
 	err := json.NewDecoder(r.Body).Decode(&expenseLevel)
@@ -52,12 +62,12 @@ func (elh *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *htt
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	el, err := entity.NewExpenseLevel(expenseLevel.Description)
+	ExpenseLevelEntity, err := entity.NewExpenseLevel(expenseLevel.Description)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = elh.ExpenseLevelDB.Create(el)
+	err = elh.ExpenseLevelDB.Create(ExpenseLevelEntity)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -72,12 +82,32 @@ func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	eo, err := entity.NewExpenseOrigin(expenseOrigin.Description)
+	expenseOriginEntity, err := entity.NewExpenseOrigin(expenseOrigin.Description)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = eoh.ExpenseOriginDB.Create(eo)
+	err = eoh.ExpenseOriginDB.Create(expenseOriginEntity)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+}
+
+func (e *ExpenseHandler) CreateExpense(w http.ResponseWriter, r *http.Request) {
+	var expense dto.Expense
+	err := json.NewDecoder(r.Body).Decode(&expense)
+	if err != nil {
+		w.WriteHeader(http.StatusBadGateway)
+		return
+	}
+	expenseEntity, err := entity.NewExpense(expense.Description, expense.Value, expense.LevelID, expense.OringID, expense.Note)
+	if err != nil {
+		w.WriteHeader(http.StatusBadGateway)
+		return
+	}
+	err = e.ExpenseDB.Create(expenseEntity)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
