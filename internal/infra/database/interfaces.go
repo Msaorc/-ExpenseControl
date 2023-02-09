@@ -28,7 +28,7 @@ type ExpenseLevelInterface interface {
 type ExpenseInterface interface {
 	Create(expense *entity.Expense) error
 	FindAll(page, limit int, sort string) ([]entity.Expense, error)
-	FindById(id string) (*entity.ExpenseLevel, error)
-	Update(expense *entity.ExpenseLevel) error
+	FindByID(id string) (*entity.Expense, error)
+	Update(expense *entity.Expense) error
 	Delete(id string) error
 }

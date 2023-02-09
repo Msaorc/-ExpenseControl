@@ -33,10 +33,7 @@ func (e *Expense) FindAll(page, limit int, sort string) ([]entity.Expense, error
 
 func (e *Expense) FindByID(id string) (*entity.Expense, error) {
 	var expense *entity.Expense
-	err := e.DB.Where("id = ?", id).First(&expense).Error
-	if err != nil {
-		return nil, err
-	}
+	err := e.DB.First(&expense, "id = ?", id).Error
 	return expense, err
 }
 
