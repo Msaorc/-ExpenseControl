@@ -27,10 +27,8 @@ func (el *ExpenseLevel) FindAll() ([]entity.ExpenseLevel, error) {
 
 func (el *ExpenseLevel) FindByID(id string) (*entity.ExpenseLevel, error) {
 	var expenseLevel *entity.ExpenseLevel
-	if err := el.DB.Where("id = ?", id).Find(&expenseLevel).Error; err != nil {
-		return nil, err
-	}
-	return expenseLevel, nil
+	err := el.DB.First(&expenseLevel, "id = ?", id).Error
+	return expenseLevel, err
 }
 
 func (el *ExpenseLevel) Update(expenseLevel *entity.ExpenseLevel) error {

@@ -1,3 +1,4 @@
 go.sum
 test.db
 expense.db
+.env
