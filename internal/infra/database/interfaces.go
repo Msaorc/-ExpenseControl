@@ -12,7 +12,7 @@ type UserInterface interface {
 type ExpenseOriginInterface interface {
 	Create(expenserOrigin *entity.ExpenseOrigin) error
 	FindAll() ([]entity.ExpenseOrigin, error)
-	FindById(id string) (*entity.ExpenseOrigin, error)
+	FindByID(id string) (*entity.ExpenseOrigin, error)
 	Update(expenseOrigin *entity.ExpenseOrigin) error
 	Delete(id string) error
 }
