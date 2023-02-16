@@ -7,6 +7,8 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
 	"github.com/Msaorc/ExpenseControlAPI/internal/webserver/handlers"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -21,15 +23,16 @@ func main() {
 		panic(err)
 	}
 	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{})
-	mux := http.NewServeMux()
+	routers := chi.NewRouter()
+	routers.Use(middleware.Logger)
 	expenseLevelDB := database.NewExpenseLevelDB(db)
 	expenseLevelHander := handlers.NewExpenseLevelHandler(expenseLevelDB)
 	expenseOriginDB := database.NewExpenseOrigin(db)
 	expenseOriginHander := handlers.NewExpenseOriginHandler(expenseOriginDB)
 	expenseDB := database.NewExpenseDB(db)
 	expenseHander := handlers.NewExpenseHandler(expenseDB)
-	mux.HandleFunc("/expenselevel", expenseLevelHander.CreateExpenseLevel)
-	mux.HandleFunc("/expenseorigin", expenseOriginHander.CreateExpenseOrigin)
-	mux.HandleFunc("/expense", expenseHander.CreateExpense)
-	http.ListenAndServe(":8081", mux)
+	routers.Post("/expenselevel", expenseLevelHander.CreateExpenseLevel)
+	routers.Post("/expenseorigin", expenseOriginHander.CreateExpenseOrigin)
+	routers.Post("/expense", expenseHander.CreateExpense)
+	http.ListenAndServe(":8081", routers)
 }
