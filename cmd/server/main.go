@@ -33,6 +33,8 @@ func main() {
 	expenseHander := handlers.NewExpenseHandler(expenseDB)
 	routers.Post("/expenselevel", expenseLevelHander.CreateExpenseLevel)
 	routers.Post("/expenseorigin", expenseOriginHander.CreateExpenseOrigin)
+	routers.Get("/expenseorigin/{id}", expenseOriginHander.FindExpenseOriginById)
+	routers.Put("/expenseorigin/{id}", expenseOriginHander.UpdateExpenseOrigin)
 	routers.Post("/expense", expenseHander.CreateExpense)
 	http.ListenAndServe(":8081", routers)
 }
