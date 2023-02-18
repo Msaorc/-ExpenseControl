@@ -7,6 +7,8 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
+	entityPKG "github.com/Msaorc/ExpenseControlAPI/pkg/entity"
+	"github.com/go-chi/chi"
 )
 
 type ExpenseLevelHandler struct {
@@ -19,7 +21,7 @@ func NewExpenseLevelHandler(db database.ExpenseLevelInterface) *ExpenseLevelHand
 	}
 }
 
-func (elh *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http.Request) {
+func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http.Request) {
 	var expenseLevel dto.ExepnseLevel
 	err := json.NewDecoder(r.Body).Decode(&expenseLevel)
 	if err != nil {
@@ -31,10 +33,54 @@ func (elh *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *htt
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	err = elh.ExpenseLevelDB.Create(ExpenseLevelEntity)
+	err = el.ExpenseLevelDB.Create(ExpenseLevelEntity)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (el *ExpenseLevelHandler) FindExpenseLevelById(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	expenseOrigin, err := el.ExpenseLevelDB.FindByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(expenseOrigin)
+}
+
+func (el *ExpenseLevelHandler) UpdateExpenseLevel(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	_, err := el.ExpenseLevelDB.FindByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	var expenseLevel entity.ExpenseLevel
+	err = json.NewDecoder(r.Body).Decode(&expenseLevel)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	expenseLevel.ID, err = entityPKG.ParseID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = el.ExpenseLevelDB.Update(&expenseLevel)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

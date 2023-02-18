@@ -32,6 +32,8 @@ func main() {
 	expenseDB := database.NewExpenseDB(db)
 	expenseHander := handlers.NewExpenseHandler(expenseDB)
 	routers.Post("/expenselevel", expenseLevelHander.CreateExpenseLevel)
+	routers.Get("/expenselevel/{id}", expenseLevelHander.FindExpenseLevelById)
+	routers.Put("/expenselevel/{id}", expenseLevelHander.UpdateExpenseLevel)
 	routers.Post("/expenseorigin", expenseOriginHander.CreateExpenseOrigin)
 	routers.Get("/expenseorigin/{id}", expenseOriginHander.FindExpenseOriginById)
 	routers.Put("/expenseorigin/{id}", expenseOriginHander.UpdateExpenseOrigin)
