@@ -52,6 +52,8 @@ func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r 
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(expenseOrigin)
 }
 

@@ -52,6 +52,8 @@ func (el *ExpenseLevelHandler) FindExpenseLevelById(w http.ResponseWriter, r *ht
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(expenseOrigin)
 }
 

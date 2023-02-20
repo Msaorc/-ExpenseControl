@@ -38,5 +38,7 @@ func main() {
 	routers.Get("/expenseorigin/{id}", expenseOriginHander.FindExpenseOriginById)
 	routers.Put("/expenseorigin/{id}", expenseOriginHander.UpdateExpenseOrigin)
 	routers.Post("/expense", expenseHander.CreateExpense)
+	routers.Get("/expense/{id}", expenseHander.FindExpenseById)
+	routers.Put("/expense/{id}", expenseHander.UpdateExpense)
 	http.ListenAndServe(":8081", routers)
 }
