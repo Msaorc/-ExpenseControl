@@ -41,6 +41,17 @@ func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *
 	w.WriteHeader(http.StatusCreated)
 }
 
+func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *http.Request) {
+	expensesOrigin, err := eo.ExpenseOriginDB.FindAll()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(expensesOrigin)
+}
+
 func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
