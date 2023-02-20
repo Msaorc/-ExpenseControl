@@ -98,7 +98,7 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 	w.WriteHeader(http.StatusOK)
 }
 
-func (eo *ExpenseOriginlHandler) Delete(w http.ResponseWriter, r *http.Request) {
+func (eo *ExpenseOriginlHandler) DeleteExpenseOrigin(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.WriteHeader(http.StatusBadRequest)

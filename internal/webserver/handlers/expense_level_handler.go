@@ -41,6 +41,17 @@ func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http
 	w.WriteHeader(http.StatusCreated)
 }
 
+func (el *ExpenseLevelHandler) FindAllExpenseLevel(w http.ResponseWriter, r *http.Request) {
+	expensesLevel, err := el.ExpenseLevelDB.FindAll()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(expensesLevel)
+}
+
 func (el *ExpenseLevelHandler) FindExpenseLevelById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -80,6 +91,25 @@ func (el *ExpenseLevelHandler) UpdateExpenseLevel(w http.ResponseWriter, r *http
 		return
 	}
 	err = el.ExpenseLevelDB.Update(&expenseLevel)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func (el *ExpenseLevelHandler) DeleteExpenseLevel(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	_, err := el.ExpenseLevelDB.FindByID(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	err = el.ExpenseLevelDB.Delete(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
