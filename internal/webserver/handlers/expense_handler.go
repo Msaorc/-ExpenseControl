@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
@@ -39,6 +40,30 @@ func (e *ExpenseHandler) CreateExpense(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) {
+	page := r.URL.Query().Get("page")
+	limit := r.URL.Query().Get("page")
+	sort := r.URL.Query().Get("sort")
+
+	pageint, err := strconv.Atoi(page)
+	if err != nil {
+		pageint = 0
+	}
+	limitint, err := strconv.Atoi(limit)
+	if err != nil {
+		limitint = 0
+	}
+
+	expenses, err := e.ExpenseDB.FindAll(pageint, limitint, sort)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(expenses)
 }
 
 func (e *ExpenseHandler) FindExpenseById(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +105,20 @@ func (e *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	err = e.ExpenseDB.Update(&expense)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}
+
+func (e *ExpenseHandler) DeleteExpense(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err := e.ExpenseDB.Delete(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
