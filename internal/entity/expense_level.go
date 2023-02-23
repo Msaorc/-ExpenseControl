@@ -13,12 +13,14 @@ var ErrExpenseLevelEntityIDIsInvalid = errors.New("ExpenseLevel: ID is Invalid")
 type ExpenseLevel struct {
 	ID          entity.ID `json:"id"`
 	Description string    `json:"description"`
+	Color       string    `json:"color"`
 }
 
-func NewExpenseLevel(description string) (*ExpenseLevel, error) {
+func NewExpenseLevel(description, color string) (*ExpenseLevel, error) {
 	exLevel := &ExpenseLevel{
 		ID:          entity.NewID(),
 		Description: description,
+		Color:       color,
 	}
 	err := exLevel.validate()
 	if err != nil {

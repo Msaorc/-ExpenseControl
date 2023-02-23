@@ -28,7 +28,7 @@ func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	ExpenseLevelEntity, err := entity.NewExpenseLevel(expenseLevel.Description)
+	ExpenseLevelEntity, err := entity.NewExpenseLevel(expenseLevel.Description, expenseLevel.Color)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return

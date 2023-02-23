@@ -4,6 +4,7 @@ import "time"
 
 type ExepnseLevel struct {
 	Description string `json:"description"`
+	Color       string `json:"color"`
 }
 
 type ExepnseOrigin struct {
