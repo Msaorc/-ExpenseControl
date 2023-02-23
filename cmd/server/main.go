@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{})
+	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{}, &entity.User{})
 	routers := chi.NewRouter()
 	routers.Use(middleware.Logger)
 	expenseLevelDB := database.NewExpenseLevelDB(db)
@@ -31,6 +31,7 @@ func main() {
 	expenseOriginHander := handlers.NewExpenseOriginHandler(expenseOriginDB)
 	expenseDB := database.NewExpenseDB(db)
 	expenseHander := handlers.NewExpenseHandler(expenseDB)
+	userHandler := handlers.NewUserHandler(database.NewUserDB(db))
 	routers.Get("/expenselevel", expenseLevelHander.FindAllExpenseLevel)
 	routers.Post("/expenselevel", expenseLevelHander.CreateExpenseLevel)
 	routers.Get("/expenselevel/{id}", expenseLevelHander.FindExpenseLevelById)
@@ -46,5 +47,6 @@ func main() {
 	routers.Get("/expense/{id}", expenseHander.FindExpenseById)
 	routers.Put("/expense/{id}", expenseHander.UpdateExpense)
 	routers.Delete("/expense/{id}", expenseHander.DeleteExpense)
+	routers.Post("/users", userHandler.CreateUser)
 	http.ListenAndServe(":8081", routers)
 }
