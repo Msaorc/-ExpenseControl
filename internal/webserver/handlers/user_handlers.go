@@ -7,10 +7,13 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
+	"github.com/go-chi/jwtauth"
 )
 
 type UserHandler struct {
-	UserDB database.UserInterface
+	UserDB        database.UserInterface
+	Jwt           *jwtauth.JWTAuth
+	JwtExperiesIn int
 }
 
 func NewUserHandler(db database.UserInterface) *UserHandler {
@@ -35,4 +38,23 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
+	var userAuthenticate dto.UserAuthenticate
+	err := json.NewDecoder(r.Body).Decode(&userAuthenticate)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	user, err := u.UserDB.FindByEmail(userAuthenticate.Email)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+	if !user.ValidatePassword(userAuthenticate.Password) {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 }
