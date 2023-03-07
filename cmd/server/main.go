@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	_, err := configs.LoadConfigs(".")
+	config, err := configs.LoadConfigs(".")
 	if err != nil {
 		panic(err)
 	}
@@ -31,7 +31,7 @@ func main() {
 	expenseOriginHander := handlers.NewExpenseOriginHandler(expenseOriginDB)
 	expenseDB := database.NewExpenseDB(db)
 	expenseHander := handlers.NewExpenseHandler(expenseDB)
-	userHandler := handlers.NewUserHandler(database.NewUserDB(db))
+	userHandler := handlers.NewUserHandler(database.NewUserDB(db), config.TokenAuth, config.JwtExperesIn)
 	routers.Get("/expenselevel", expenseLevelHander.FindAllExpenseLevel)
 	routers.Post("/expenselevel", expenseLevelHander.CreateExpenseLevel)
 	routers.Get("/expenselevel/{id}", expenseLevelHander.FindExpenseLevelById)
@@ -48,5 +48,6 @@ func main() {
 	routers.Put("/expense/{id}", expenseHander.UpdateExpense)
 	routers.Delete("/expense/{id}", expenseHander.DeleteExpense)
 	routers.Post("/users", userHandler.CreateUser)
+	routers.Post("/users/authenticate", userHandler.Authenticate)
 	http.ListenAndServe(":8081", routers)
 }

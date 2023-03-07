@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
@@ -16,8 +17,12 @@ type UserHandler struct {
 	JwtExperiesIn int
 }
 
-func NewUserHandler(db database.UserInterface) *UserHandler {
-	return &UserHandler{UserDB: db}
+func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExperiesIn int) *UserHandler {
+	return &UserHandler{
+		UserDB:        db,
+		Jwt:           jwt,
+		JwtExperiesIn: jwtExperiesIn,
+	}
 }
 
 func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -56,5 +61,21 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
+
+	_, token, _ := u.Jwt.Encode(map[string]interface{}{
+		"sub":  user.ID.String(),
+		"name": user.Name,
+		"exp":  time.Now().Add(time.Second * time.Duration(u.JwtExperiesIn)).Unix(),
+	})
+
+	accessToken := struct {
+		AccessToken string `json:"access_token"`
+	}{
+		AccessToken: token,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(accessToken)
 
 }
