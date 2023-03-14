@@ -1,0 +1,21 @@
+basePath: /
+host: localhost:8081
+info:
+  contact:
+    email: msaorc@hotmail.com
+    name: Marcos Augusto
+    url: http://M&ASistem.com.br
+  description: API for controlling day-to-day expenses.
+  license:
+    name: M&ASistem
+    url: http://M&ASistem.com.br
+  termsOfService: http://swagger.io/terms/
+  title: ExpenseControl API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

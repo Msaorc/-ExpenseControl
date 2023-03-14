@@ -1,0 +1,28 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for controlling day-to-day expenses.",
+        "title": "ExpenseControl API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "Marcos Augusto",
+            "url": "http://M\u0026ASistem.com.br",
+            "email": "msaorc@hotmail.com"
+        },
+        "license": {
+            "name": "M\u0026ASistem",
+            "url": "http://M\u0026ASistem.com.br"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8081",
+    "basePath": "/",
+    "paths": {},
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

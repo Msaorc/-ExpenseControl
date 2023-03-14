@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Msaorc/ExpenseControlAPI/configs"
+	_ "github.com/Msaorc/ExpenseControlAPI/docs"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
 	"github.com/Msaorc/ExpenseControlAPI/internal/webserver/handlers"
@@ -12,7 +13,26 @@ import (
 	"github.com/go-chi/jwtauth"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
+
+// @title           ExpenseControl API
+// @version         1.0
+// @description     API for controlling day-to-day expenses.
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Marcos Augusto
+// @contact.url    http://M&ASistem.com.br
+// @contact.email  msaorc@hotmail.com
+
+// @license.name  M&ASistem
+// @license.url   http://M&ASistem.com.br
+
+// @host      localhost:8081
+// @BasePath  /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 func main() {
 	config, err := configs.LoadConfigs(".")
@@ -66,5 +86,6 @@ func main() {
 
 	routers.Post("/users", userHandler.CreateUser)
 	routers.Post("/users/authenticate", userHandler.Authenticate)
+	routers.Get("/docs/*", httpSwagger.Handler(httpSwagger.URL("http://localhost:8081/docs/doc.json")))
 	http.ListenAndServe(":8081", routers)
 }
