@@ -17,10 +17,6 @@ type UserHandler struct {
 	JwtExperiesIn int
 }
 
-type Error struct {
-	Message string `json:"message"`
-}
-
 func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExperiesIn int) *UserHandler {
 	return &UserHandler{
 		UserDB:        db,
@@ -32,22 +28,21 @@ func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExperies
 // Create User godoc
 // @Summary      Create User
 // @Description  Create User
-// @Tags         users
+// @Tags         Users
 // @Accept       json
 // @Produce      json
 // @Param        request   body      dto.User  true  "user request"
 // @Success      201
-// @Failure      500  {object}  Error
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
 // @Router       /users [post]
 func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userInput dto.User
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		errorMessage := Error{
-			Message: err.Error(),
-		}
+		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: err.Error()}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -55,9 +50,7 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := Error{
-			Message: err.Error(),
-		}
+		errorMessage := dto.Error{Message: err.Error()}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -65,29 +58,47 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := Error{
-			Message: err.Error(),
-		}
+		errorMessage := dto.Error{Message: err.Error()}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
 }
 
+// Authenticate User godoc
+// @Summary      Authenticate User
+// @Description  Authenticate User
+// @Tags         Users
+// @Accept       json
+// @Produce      json
+// @Param        request   body      dto.UserAuthenticate  true  "authenticate request"
+// @Success      200  {object}  dto.UserAuthenticateOutput
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /users/authenticate [post]
 func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	var userAuthenticate dto.UserAuthenticate
 	err := json.NewDecoder(r.Body).Decode(&userAuthenticate)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	user, err := u.UserDB.FindByEmail(userAuthenticate.Email)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	if !user.ValidatePassword(userAuthenticate.Password) {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusUnauthorized)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 
@@ -97,14 +108,8 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		"exp":  time.Now().Add(time.Second * time.Duration(u.JwtExperiesIn)).Unix(),
 	})
 
-	accessToken := struct {
-		AccessToken string `json:"access_token"`
-	}{
-		AccessToken: token,
-	}
-
+	accessToken := dto.UserAuthenticateOutput{AccessToken: token}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)
-
 }

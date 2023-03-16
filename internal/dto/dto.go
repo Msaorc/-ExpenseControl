@@ -21,12 +21,20 @@ type Expense struct {
 }
 
 type User struct {
-	Name     string    `json:"name"`
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type UserAuthenticate struct {
-	Email    string    `json:"email"`
-	Password string    `json:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type UserAuthenticateOutput struct {
+	AccessToken string `json:"access_token"`
+}
+
+type Error struct {
+	Message string `json:"message"`
 }

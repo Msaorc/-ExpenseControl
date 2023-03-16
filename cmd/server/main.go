@@ -11,9 +11,9 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/jwtauth"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // @title           ExpenseControl API
@@ -67,11 +67,11 @@ func main() {
 	routers.Route("/expenseorigin", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(config.TokenAuth))
 		r.Use(jwtauth.Authenticator)
-		routers.Get("/", expenseOriginHander.FindAllExpenseOrigin)
-		routers.Post("/", expenseOriginHander.CreateExpenseOrigin)
-		routers.Get("/{id}", expenseOriginHander.FindExpenseOriginById)
-		routers.Put("/{id}", expenseOriginHander.UpdateExpenseOrigin)
-		routers.Delete("/{id}", expenseOriginHander.DeleteExpenseOrigin)
+		r.Get("/", expenseOriginHander.FindAllExpenseOrigin)
+		r.Post("/", expenseOriginHander.CreateExpenseOrigin)
+		r.Get("/{id}", expenseOriginHander.FindExpenseOriginById)
+		r.Put("/{id}", expenseOriginHander.UpdateExpenseOrigin)
+		r.Delete("/{id}", expenseOriginHander.DeleteExpenseOrigin)
 	})
 
 	routers.Route("/expense", func(r chi.Router) {

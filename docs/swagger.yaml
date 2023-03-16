@@ -1,5 +1,15 @@
 basePath: /
 definitions:
+  dto.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.ExepnseOrigin:
+    properties:
+      description:
+        type: string
+    type: object
   dto.User:
     properties:
       email:
@@ -9,9 +19,23 @@ definitions:
       password:
         type: string
     type: object
-  handlers.Error:
+  dto.UserAuthenticate:
     properties:
-      message:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.UserAuthenticateOutput:
+    properties:
+      access_token:
+        type: string
+    type: object
+  entity.ExpenseOrigin:
+    properties:
+      description:
+        type: string
+      id:
         type: string
     type: object
 host: localhost:8081
@@ -28,6 +52,158 @@ info:
   title: ExpenseControl API
   version: "1.0"
 paths:
+  /expenseorigin:
+    get:
+      consumes:
+      - application/json
+      description: FindAll ExpenseOrigin
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.ExpenseOrigin'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: FindAll ExpenseOrigin
+      tags:
+      - ExpensesOrigin
+    post:
+      consumes:
+      - application/json
+      description: Create ExpenseOrigin
+      parameters:
+      - description: expenseorigin request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ExepnseOrigin'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create ExpenseOrigin
+      tags:
+      - ExpensesOrigin
+  /expenseorigin/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ExpenseOrigin
+      parameters:
+      - description: ExpenseOrigin ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete ExpenseOrigin
+      tags:
+      - ExpensesOrigin
+    get:
+      consumes:
+      - application/json
+      description: FindById ExpenseOrigin
+      parameters:
+      - description: ExpenseOrigin ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ExpenseOrigin'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: FindById ExpenseOrigin
+      tags:
+      - ExpensesOrigin
+    put:
+      consumes:
+      - application/json
+      description: Update ExpenseOrigin
+      parameters:
+      - description: ExpenseOrigin ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: ExpenseOrigin request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ExepnseOrigin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update ExpenseOrigin
+      tags:
+      - ExpensesOrigin
   /users:
     post:
       consumes:
@@ -45,13 +221,47 @@ paths:
       responses:
         "201":
           description: Created
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/handlers.Error'
+            $ref: '#/definitions/dto.Error'
       summary: Create User
       tags:
-      - users
+      - Users
+  /users/authenticate:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate User
+      parameters:
+      - description: authenticate request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UserAuthenticate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserAuthenticateOutput'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      summary: Authenticate User
+      tags:
+      - Users
 securityDefinitions:
   ApiKeyAuth:
     in: header
