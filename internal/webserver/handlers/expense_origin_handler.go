@@ -76,7 +76,10 @@ func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *
 func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *http.Request) {
 	expensesOrigin, err := eo.ExpenseOriginDB.FindAll()
 	if err != nil {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	w.Header().Set("content-type", "application/json")

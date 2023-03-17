@@ -3,4 +3,4 @@
 Application for personal expense control.
 
 ## Docs
-* **Url:**
+* **Url:** `http://localhost:8081/docs/index.html`
