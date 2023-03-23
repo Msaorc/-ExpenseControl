@@ -2,7 +2,7 @@ package dto
 
 import "time"
 
-type ExepnseLevel struct {
+type ExpenseLevel struct {
 	Description string `json:"description"`
 	Color       string `json:"color"`
 }

@@ -10,6 +10,13 @@ definitions:
       description:
         type: string
     type: object
+  dto.ExpenseLevel:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+    type: object
   dto.User:
     properties:
       email:
@@ -29,6 +36,15 @@ definitions:
   dto.UserAuthenticateOutput:
     properties:
       access_token:
+        type: string
+    type: object
+  entity.ExpenseLevel:
+    properties:
+      color:
+        type: string
+      description:
+        type: string
+      id:
         type: string
     type: object
   entity.ExpenseOrigin:
@@ -52,6 +68,158 @@ info:
   title: ExpenseControl API
   version: "1.0"
 paths:
+  /expenselevel:
+    get:
+      consumes:
+      - application/json
+      description: FindAll ExpenseLevel
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.ExpenseLevel'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: FindAll ExpenseLevel
+      tags:
+      - ExpenseLevel
+    post:
+      consumes:
+      - application/json
+      description: Create ExpenseLevel
+      parameters:
+      - description: expenselevel request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ExpenseLevel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Create ExpenseLevel
+      tags:
+      - ExpenseLevel
+  /expenselevel/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete ExpenseLevel
+      parameters:
+      - description: ExpenseLevel ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete ExpenseLevel
+      tags:
+      - ExpenseLevel
+    get:
+      consumes:
+      - application/json
+      description: FindById ExpenseLevel
+      parameters:
+      - description: ExpenseLevel ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.ExpenseLevel'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: FindById ExpenseLevel
+      tags:
+      - ExpenseLevel
+    put:
+      consumes:
+      - application/json
+      description: Update ExpenseLevel
+      parameters:
+      - description: ExpenseLevel ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: expenselevel request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ExpenseLevel'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update ExpenseLevel
+      tags:
+      - ExpenseLevel
   /expenseorigin:
     get:
       consumes:

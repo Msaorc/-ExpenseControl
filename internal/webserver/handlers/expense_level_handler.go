@@ -31,10 +31,10 @@ func NewExpenseLevelHandler(db database.ExpenseLevelInterface) *ExpenseLevelHand
 // @Success      201
 // @Failure      404  {object}  dto.Error
 // @Failure      500  {object}  dto.Error
-// @Router       /expenseorigin [post]
+// @Router       /expenselevel [post]
 // @Security ApiKeyAuth
 func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http.Request) {
-	var expenseLevel dto.ExepnseLevel
+	var expenseLevel dto.ExpenseLevel
 	err := json.NewDecoder(r.Body).Decode(&expenseLevel)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")

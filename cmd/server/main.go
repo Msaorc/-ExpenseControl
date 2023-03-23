@@ -77,11 +77,11 @@ func main() {
 	routers.Route("/expense", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(config.TokenAuth))
 		r.Use(jwtauth.Authenticator)
-		routers.Get("/", expenseHander.FindAllExpense)
-		routers.Post("/", expenseHander.CreateExpense)
-		routers.Get("/{id}", expenseHander.FindExpenseById)
-		routers.Put("/{id}", expenseHander.UpdateExpense)
-		routers.Delete("/{id}", expenseHander.DeleteExpense)
+		r.Get("/", expenseHander.FindAllExpense)
+		r.Post("/", expenseHander.CreateExpense)
+		r.Get("/{id}", expenseHander.FindExpenseById)
+		r.Put("/{id}", expenseHander.UpdateExpense)
+		r.Delete("/{id}", expenseHander.DeleteExpense)
 	})
 
 	routers.Post("/users", userHandler.CreateUser)
