@@ -22,29 +22,63 @@ func NewExpenseHandler(db database.ExpenseInterface) *ExpenseHandler {
 	}
 }
 
+// Create Expense godoc
+// @Summary      Create Expense
+// @Description  Create Expense
+// @Tags         Expense
+// @Accept       json
+// @Produce      json
+// @Param        request   body      dto.Expense  true  "expense request"
+// @Success      201
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /expense [post]
+// @Security ApiKeyAuth
 func (e *ExpenseHandler) CreateExpense(w http.ResponseWriter, r *http.Request) {
 	var expense dto.Expense
 	err := json.NewDecoder(r.Body).Decode(&expense)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expenseEntity, err := entity.NewExpense(expense.Description, expense.Value, expense.LevelID, expense.OringID, expense.Note)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = e.ExpenseDB.Create(expenseEntity)
 	if err != nil {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
 }
 
+// FindAll godoc
+// @Summary      FindAll Expense
+// @Description  FindAll Expense
+// @Tags         Expense
+// @Accept       json
+// @Produce      json
+// @Param        page    query    string   false  "page number"
+// @Param        limit   query    string   false   "limit"
+// @Success      200     {array}  entity.Expense
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /expense [get]
+// @Security ApiKeyAuth
 func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) {
 	page := r.URL.Query().Get("page")
-	limit := r.URL.Query().Get("page")
+	limit := r.URL.Query().Get("limit")
 	sort := r.URL.Query().Get("sort")
 
 	pageint, err := strconv.Atoi(page)
@@ -58,7 +92,10 @@ func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) 
 
 	expenses, err := e.ExpenseDB.FindAll(pageint, limitint, sort)
 	if err != nil {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	w.Header().Set("content-type", "application/json")
@@ -66,15 +103,33 @@ func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(expenses)
 }
 
+// FindById Expense godoc
+// @Summary      FindById Expense
+// @Description  FindById Expense
+// @Tags         Expense
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Expense ID" Format(uuid)
+// @Success      200  {object}  entity.Expense
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /expense/{id} [get]
+// @Security ApiKeyAuth
 func (e *ExpenseHandler) FindExpenseById(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: "Id inválido"}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expense, err := e.ExpenseDB.FindByID(id)
 	if err != nil {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	w.Header().Set("content-type", "application/json")
@@ -82,36 +137,76 @@ func (e *ExpenseHandler) FindExpenseById(w http.ResponseWriter, r *http.Request)
 	json.NewEncoder(w).Encode(expense)
 }
 
+// Update Expense godoc
+// @Summary      Update Expense
+// @Description  Update Expense
+// @Tags         Expense
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Expense ID" Format(uuid)
+// @Param        request   body      dto.Expense  true  "expense request"
+// @Success      200
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /expense/{id} [put]
+// @Security ApiKeyAuth
 func (e *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: "Id inválido"}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	_, err := e.ExpenseDB.FindByID(id)
 	if err != nil {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	var expense entity.Expense
 	err = json.NewDecoder(r.Body).Decode(&expense)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expense.ID, err = entityPKG.ParseID(id)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = e.ExpenseDB.Update(&expense)
 	if err != nil {
+		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
+		errorMessage := dto.Error{Message: err.Error()}
+		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 }
 
+// Delete Expense godoc
+// @Summary      Delete Expense
+// @Description  Delete Expense
+// @Tags         Expense
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Expense ID" Format(uuid)
+// @Success      200
+// @Failure      404  {object}  dto.Error
+// @Failure      500  {object}  dto.Error
+// @Router       /expense/{id} [delete]
+// @Security ApiKeyAuth
 func (e *ExpenseHandler) DeleteExpense(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {

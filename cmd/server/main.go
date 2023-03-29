@@ -53,6 +53,7 @@ func main() {
 	userHandler := handlers.NewUserHandler(database.NewUserDB(db), config.TokenAuth, config.JwtExperesIn)
 	routers := chi.NewRouter()
 	routers.Use(middleware.Logger)
+	routers.Use(middleware.Recoverer)
 
 	routers.Route("/expenselevel", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(config.TokenAuth))
