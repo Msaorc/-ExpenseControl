@@ -862,9 +862,6 @@ const docTemplate = `{
         "dto.Expense": {
             "type": "object",
             "properties": {
-                "date": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },

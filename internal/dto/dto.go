@@ -1,7 +1,5 @@
 package dto
 
-import "time"
-
 type ExpenseLevel struct {
 	Description string `json:"description"`
 	Color       string `json:"color"`
@@ -12,12 +10,11 @@ type ExepnseOrigin struct {
 }
 
 type Expense struct {
-	Description string    `json:"description"`
-	Value       float64   `json:"value"`
-	Date        time.Time `json:"date"`
-	LevelID     string    `json:"level_id"`
-	OringID     string    `json:"origin_id"`
-	Note        string    `json:"note"`
+	Description string  `json:"description"`
+	Value       float64 `json:"value"`
+	LevelID     string  `json:"level_id"`
+	OringID     string  `json:"origin_id"`
+	Note        string  `json:"note"`
 }
 
 type User struct {

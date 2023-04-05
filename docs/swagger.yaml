@@ -12,8 +12,6 @@ definitions:
     type: object
   dto.Expense:
     properties:
-      date:
-        type: string
       description:
         type: string
       level_id:
