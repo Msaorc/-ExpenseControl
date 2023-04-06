@@ -53,7 +53,23 @@ func main() {
 	userHandler := handlers.NewUserHandler(database.NewUserDB(db), config.TokenAuth, config.JwtExperesIn)
 	routers := chi.NewRouter()
 	routers.Use(middleware.Logger)
-	routers.Use(middleware.Recoverer)
+	// routers.Use(middleware.Recoverer)
+
+	// routers.Use(middleware.RouteHeaders().Route("Origin", "*", cors.Handler(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	// 	AllowedHeaders:   []string{"Accept", "Content-Type"},
+	// 	AllowCredentials: true, // <----------<<< do not allow credentials
+	// })).Handler)
+
+	// cors := cors.New(cors.Options{
+	// 	AllowedOrigins:   []string{"*"},
+	// 	AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+	// 	AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+	// 	AllowCredentials: true,
+	// 	MaxAge:           300, // Maximum value not ignored by any of major browsers
+	// })
+	// routers.Use(cors.Handler)
 
 	routers.Route("/expenselevel", func(r chi.Router) {
 		r.Use(jwtauth.Verifier(config.TokenAuth))

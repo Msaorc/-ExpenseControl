@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -108,6 +109,7 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		"exp":  time.Now().Add(time.Second * time.Duration(u.JwtExperiesIn)).Unix(),
 	})
 
+	fmt.Println("Passou em td, vamos devolver o token jwt")
 	accessToken := dto.UserAuthenticateOutput{AccessToken: token}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
