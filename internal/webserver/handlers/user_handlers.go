@@ -42,24 +42,41 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error()}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
-	user, err := entity.NewUser(userInput.Name, userInput.Email, userInput.Password)
+	user, _ := u.UserDB.FindByEmail(userInput.Email)
+	if user != nil {
+		w.Header().Set("content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		message := fmt.Sprintf("Já existe um usuário com o email (%s) cadastrado!", userInput.Email)
+		errorMessage := dto.Error{
+			Code:    http.StatusAlreadyReported,
+			Message: message}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	user, err = entity.NewUser(userInput.Name, userInput.Email, userInput.Password)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error()}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = u.UserDB.Create(user)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error()}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}

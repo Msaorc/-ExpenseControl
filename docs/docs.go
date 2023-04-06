@@ -846,6 +846,9 @@ const docTemplate = `{
         "dto.Error": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 }
