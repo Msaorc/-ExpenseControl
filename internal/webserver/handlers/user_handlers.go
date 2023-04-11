@@ -99,34 +99,40 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userAuthenticate)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	user, err := u.UserDB.FindByEmail(userAuthenticate.Email)
-	if err != nil {
+	if user == nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	if !user.ValidatePassword(userAuthenticate.Password) {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusUnauthorized)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusUnauthorized,
+			Message: "Incorrect Password, check!",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
-
 	_, token, _ := u.Jwt.Encode(map[string]interface{}{
 		"sub":  user.ID.String(),
 		"name": user.Name,
 		"exp":  time.Now().Add(time.Second * time.Duration(u.JwtExperiesIn)).Unix(),
 	})
-
-	fmt.Println("Passou em td, vamos devolver o token jwt")
 	accessToken := dto.UserAuthenticateOutput{
 		UserID:      user.ID.String(),
 		AccessToken: token,
