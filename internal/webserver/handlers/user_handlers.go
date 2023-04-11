@@ -127,7 +127,10 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 	})
 
 	fmt.Println("Passou em td, vamos devolver o token jwt")
-	accessToken := dto.UserAuthenticateOutput{AccessToken: token}
+	accessToken := dto.UserAuthenticateOutput{
+		UserID:      user.ID.String(),
+		AccessToken: token,
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)

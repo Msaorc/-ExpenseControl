@@ -30,9 +30,10 @@ type UserAuthenticate struct {
 
 type UserAuthenticateOutput struct {
 	AccessToken string `json:"access_token"`
+	UserID      string `json:"user_id"`
 }
 
 type Error struct {
-	Code    int `json:"code"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
