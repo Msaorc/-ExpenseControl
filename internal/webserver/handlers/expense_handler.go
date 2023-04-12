@@ -98,6 +98,12 @@ func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) 
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
+	// Processar dto de retorno com as descrições de nivel e origem despesa
+	// var expensesOutput []dto.ExpenseAll
+	// for _, expense := range expenses {
+
+	// }
+
 	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(expenses)

@@ -9,7 +9,7 @@ type ExpenseOrigin struct {
 	DB *gorm.DB
 }
 
-func NewExpenseOrigin(db *gorm.DB) *ExpenseOrigin {
+func NewExpenseOriginDB(db *gorm.DB) *ExpenseOrigin {
 	return &ExpenseOrigin{DB: db}
 }
 

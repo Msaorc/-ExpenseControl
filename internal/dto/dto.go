@@ -17,6 +17,14 @@ type Expense struct {
 	Note        string  `json:"note"`
 }
 
+type ExpenseAll struct {
+	Description       string  `json:"description"`
+	Value             float64 `json:"value"`
+	LevelDescription  string  `json:"level_description"`
+	OringDescritption string  `json:"origin_description"`
+	Note              string  `json:"note"`
+}
+
 type User struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`

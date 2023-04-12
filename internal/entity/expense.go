@@ -16,24 +16,26 @@ var ErrExpenseLevelIsRequired = errors.New("Expense: LevelID is Required")
 var ErrExpenseOriginIsRequired = errors.New("Expense: OriginID is Required")
 
 type Expense struct {
-	ID          entity.ID `json:"id"`
-	Description string    `json:"description"`
-	Value       float64   `json:"value"`
-	Date        time.Time `json:"date"`
-	LevelID     string    `json:"level_id"`
-	OringID     string    `json:"origin_id"`
-	Note        string    `json:"note"`
+	ID              entity.ID `gorm:"primaryKey" json:"id"`
+	Description     string    `json:"description"`
+	Value           float64   `json:"value"`
+	Date            time.Time `json:"date"`
+	ExpenseLevelID  string    `gorm:"size:36" json:"level_id"`
+	ExpenseLevel    ExpenseLevel
+	ExpenseOriginID string `gorm:"size:36" json:"origin_id"`
+	ExpenseOrigin   ExpenseOrigin
+	Note            string `json:"note"`
 }
 
 func NewExpense(description string, value float64, levelID string, originID string, note string) (*Expense, error) {
 	expense := &Expense{
-		ID:          entity.NewID(),
-		Description: description,
-		Value:       value,
-		Date:        time.Now(),
-		LevelID:     levelID,
-		OringID:     originID,
-		Note:        note,
+		ID:              entity.NewID(),
+		Description:     description,
+		Value:           value,
+		Date:            time.Now(),
+		ExpenseLevelID:  levelID,
+		ExpenseOriginID: originID,
+		Note:            note,
 	}
 	err := expense.Validate()
 	if err != nil {
@@ -58,10 +60,10 @@ func (e *Expense) Validate() error {
 	if e.Value < 0 {
 		return ErrExpenseValueIsInvalid
 	}
-	if e.LevelID == "" {
+	if e.ExpenseLevelID == "" {
 		return ErrExpenseLevelIsRequired
 	}
-	if e.OringID == "" {
+	if e.ExpenseOriginID == "" {
 		return ErrExpenseOriginIsRequired
 	}
 	return nil

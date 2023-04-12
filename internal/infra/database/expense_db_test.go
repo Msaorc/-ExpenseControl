@@ -10,8 +10,18 @@ import (
 
 func TestCreateExpenseDB(t *testing.T) {
 	db := CreateTableAndConnectionBD(entity.Expense{})
+	db.AutoMigrate(entity.ExpenseOrigin{})
+	db.AutoMigrate(entity.ExpenseLevel{})
 	expenseDB := NewExpenseDB(db)
-	expense, err := entity.NewExpense("Bakery", 24.00, "level_id_test", "origin_id_test", "Buying bread and egg in Avencas")
+
+	expenseOriginDB := NewExpenseOriginDB(db)
+	expenseOrigin, _ := entity.NewExpenseOrigin("C6 Carbon")
+	expenseOriginDB.Create(expenseOrigin)
+	expenseLevelDB := NewExpenseLevelDB(db)
+	expenseLevel, _ := entity.NewExpenseLevel("Medium", "yallow")
+	expenseLevelDB.Create(expenseLevel)
+
+	expense, err := entity.NewExpense("Bakery", 24.00, expenseLevel.ID.String(), expenseOrigin.ID.String(), "Buying bread and egg in Avencas")
 	assert.Nil(t, err)
 	err = expenseDB.Create(expense)
 	assert.Nil(t, err)
@@ -19,9 +29,30 @@ func TestCreateExpenseDB(t *testing.T) {
 	assert.NotEmpty(t, expense.ID)
 	assert.Equal(t, "Bakery", expense.Description)
 	assert.Equal(t, 24.00, expense.Value)
-	assert.Equal(t, "level_id_test", expense.LevelID)
-	assert.Equal(t, "origin_id_test", expense.OringID)
+	assert.Equal(t, expenseLevel.ID.String(), expense.ExpenseLevelID)
+	assert.Equal(t, expenseOrigin.ID.String(), expense.ExpenseOriginID)
 	assert.Equal(t, "Buying bread and egg in Avencas", expense.Note)
+}
+
+func TestCreateExpenseErrorDB(t *testing.T) {
+	db := CreateTableAndConnectionBD(entity.Expense{})
+	db.AutoMigrate(entity.ExpenseOrigin{})
+	expenseDB := NewExpenseDB(db)
+	expenseOriginDB := NewExpenseOriginDB(db)
+	expenseOrigin, _ := entity.NewExpenseOrigin("C6 Carbon")
+	expenseOriginDB.Create(expenseOrigin)
+
+	expense, err := entity.NewExpense("Bakery", 24.00, "Expense level id error", "expenseOrigin.ID.String()", "Buying bread and egg in Avencas")
+	assert.Nil(t, err)
+	err = expenseDB.Create(expense)
+	assert.NotNil(t, err)
+	assert.Equal(t, "Origem despesa inválida, verifique!", err.Error())
+
+	expense, err = entity.NewExpense("Bakery", 24.00, "Expense level id error", expenseOrigin.ID.String(), "Buying bread and egg in Avencas")
+	assert.Nil(t, err)
+	err = expenseDB.Create(expense)
+	assert.NotNil(t, err)
+	assert.Equal(t, "Nivel despesa inválida, verifique!", err.Error())
 }
 
 func TestFindAllExpenseDB(t *testing.T) {
@@ -53,8 +84,8 @@ func TestFindExpenseDBByID(t *testing.T) {
 	assert.NotNil(t, expensebyId)
 	assert.Equal(t, expensebyId.Description, expensebyId.Description)
 	assert.Equal(t, expensebyId.Value, expensebyId.Value)
-	assert.Equal(t, expense.LevelID, expensebyId.LevelID)
-	assert.Equal(t, expense.OringID, expensebyId.OringID)
+	assert.Equal(t, expense.ExpenseLevelID, expensebyId.ExpenseLevelID)
+	assert.Equal(t, expense.ExpenseOriginID, expensebyId.ExpenseOriginID)
 	assert.Equal(t, expense.Note, expensebyId.Note)
 }
 
@@ -67,15 +98,15 @@ func TestUpdateExpense(t *testing.T) {
 	assert.Nil(t, err)
 	expense.Description = "Gasoline"
 	expense.Value = 30.00
-	expense.LevelID = "level_id_test_updated"
-	expense.OringID = "origin_id_test_updated"
+	expense.ExpenseLevelID = "level_id_test_updated"
+	expense.ExpenseOriginID = "origin_id_test_updated"
 	expense.Note = "expense update"
 	err = expenseDB.Update(expense)
 	assert.Nil(t, err)
 	assert.Equal(t, "Gasoline", expense.Description)
 	assert.Equal(t, 30.00, expense.Value)
-	assert.Equal(t, "level_id_test_updated", expense.LevelID)
-	assert.Equal(t, "origin_id_test_updated", expense.OringID)
+	assert.Equal(t, "level_id_test_updated", expense.ExpenseLevelID)
+	assert.Equal(t, "origin_id_test_updated", expense.ExpenseOriginID)
 	assert.Equal(t, "expense update", expense.Note)
 }
 

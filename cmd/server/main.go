@@ -46,7 +46,7 @@ func main() {
 	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{}, &entity.User{})
 	expenseLevelDB := database.NewExpenseLevelDB(db)
 	expenseLevelHander := handlers.NewExpenseLevelHandler(expenseLevelDB)
-	expenseOriginDB := database.NewExpenseOrigin(db)
+	expenseOriginDB := database.NewExpenseOriginDB(db)
 	expenseOriginHander := handlers.NewExpenseOriginHandler(expenseOriginDB)
 	expenseDB := database.NewExpenseDB(db)
 	expenseHander := handlers.NewExpenseHandler(expenseDB)

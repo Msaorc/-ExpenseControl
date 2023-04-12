@@ -15,10 +15,10 @@ func TestNewExpense(t *testing.T) {
 	assert.Equal(t, "Gasoline", expense.Description)
 	assert.NotEmpty(t, expense.Value)
 	assert.Equal(t, 100.00, expense.Value)
-	assert.NotEmpty(t, expense.LevelID)
-	assert.Equal(t, "level_id_generete", expense.LevelID)
-	assert.NotEmpty(t, expense.OringID)
-	assert.Equal(t, "origin_id_generete", expense.OringID)
+	assert.NotEmpty(t, expense.ExpenseLevelID)
+	assert.Equal(t, "level_id_generete", expense.ExpenseLevelID)
+	assert.NotEmpty(t, expense.ExpenseOriginID)
+	assert.Equal(t, "origin_id_generete", expense.ExpenseOriginID)
 }
 
 func TestExpenseWhenDescriptionIsRequired(t *testing.T) {

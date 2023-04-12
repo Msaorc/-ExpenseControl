@@ -1,6 +1,8 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"gorm.io/gorm"
 )
@@ -14,6 +16,16 @@ func NewExpenseDB(db *gorm.DB) *Expense {
 }
 
 func (e *Expense) Create(expense *entity.Expense) error {
+	expenseOrigin := NewExpenseOriginDB(e.DB)
+	_, err := expenseOrigin.FindByID(expense.ExpenseOriginID)
+	if err != nil {
+		return errors.New("Origem despesa inválida, verifique!")
+	}
+	expenseLevel := NewExpenseLevelDB(e.DB)
+	_, err = expenseLevel.FindByID(expense.ExpenseLevelID)
+	if err != nil {
+		return errors.New("Nivel despesa inválida, verifique!")
+	}
 	return e.DB.Create(expense).Error
 }
 
