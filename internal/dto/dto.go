@@ -18,6 +18,7 @@ type Expense struct {
 }
 
 type ExpenseAll struct {
+	ID                string  `json:"id"`
 	Description       string  `json:"description"`
 	Value             float64 `json:"value"`
 	LevelDescription  string  `json:"level_description"`

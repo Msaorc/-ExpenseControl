@@ -11,7 +11,7 @@ var ErrExpenseOriginEntityIDIsRequired = errors.New("ExpenseOrigin: ID is requir
 var ErrExpenseOriginEntityIDIsInvalid = errors.New("ExpenseOrigin: ID is required")
 
 type ExpenseOrigin struct {
-	ID          entity.ID `json:"id"`
+	ID          entity.ID `gorm:"primaryKey" json:"id"`
 	Description string    `json:"description"`
 }
 

@@ -36,10 +36,10 @@ func (e *Expense) FindAll(page, limit int, sort string) ([]entity.Expense, error
 		sort = "asc"
 	}
 	if page >= 0 && limit >= 0 {
-		err = e.DB.Limit(limit).Offset((page - 1) * limit).Order("description " + sort).Find(&expense).Error
+		err = e.DB.Preload("ExpenseLevel").Preload("ExpenseOrigin").Limit(limit).Offset((page - 1) * limit).Order("description " + sort).Find(&expense).Error
 		return expense, err
 	}
-	err = e.DB.Order("description " + sort).Find(&expense).Error
+	err = e.DB.Preload("ExpenseLevel").Preload("ExpenseOrigin").Find(&expense).Order("description " + sort).Error
 	return expense, err
 }
 

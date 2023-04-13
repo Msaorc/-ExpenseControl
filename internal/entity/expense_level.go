@@ -11,7 +11,7 @@ var ErrExpenseLevelEntityIDIsRequired = errors.New("ExpenseLevel: ID is Required
 var ErrExpenseLevelEntityIDIsInvalid = errors.New("ExpenseLevel: ID is Invalid")
 
 type ExpenseLevel struct {
-	ID          entity.ID `json:"id"`
+	ID          entity.ID `gorm:"primaryKey" json:"id"`
 	Description string    `json:"description"`
 	Color       string    `json:"color"`
 }

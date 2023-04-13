@@ -57,9 +57,19 @@ func TestCreateExpenseErrorDB(t *testing.T) {
 
 func TestFindAllExpenseDB(t *testing.T) {
 	db := CreateTableAndConnectionBD(entity.Expense{})
+	db.AutoMigrate(entity.ExpenseOrigin{})
+	db.AutoMigrate(entity.ExpenseLevel{})
 	expenseDB := NewExpenseDB(db)
+
+	expenseOriginDB := NewExpenseOriginDB(db)
+	expenseOrigin, _ := entity.NewExpenseOrigin("C6 Carbon")
+	expenseOriginDB.Create(expenseOrigin)
+	expenseLevelDB := NewExpenseLevelDB(db)
+	expenseLevel, _ := entity.NewExpenseLevel("Medium", "yallow")
+	expenseLevelDB.Create(expenseLevel)
+
 	for i := 1; i < 10; i++ {
-		expense, err := entity.NewExpense(fmt.Sprintf("Gasoline %d", i), 100.00, "level_id_test", "origin_id_test", fmt.Sprintf("Gasoline note %d", i))
+		expense, err := entity.NewExpense(fmt.Sprintf("Gasoline %d", i), 100.00, expenseLevel.ID.String(), expenseOrigin.ID.String(), fmt.Sprintf("Gasoline note %d", i))
 		assert.Nil(t, err)
 		err = expenseDB.Create(expense)
 		assert.Nil(t, err)
@@ -70,6 +80,8 @@ func TestFindAllExpenseDB(t *testing.T) {
 	assert.Equal(t, "Gasoline 1", expenses[0].Description)
 	assert.Equal(t, "Gasoline 2", expenses[1].Description)
 	assert.Equal(t, "Gasoline 3", expenses[2].Description)
+	assert.Equal(t, "C6 Carbon", expenses[0].ExpenseOrigin.Description)
+	assert.Equal(t, "Medium", expenses[0].ExpenseLevel.Description)
 }
 
 func TestFindExpenseDBByID(t *testing.T) {
