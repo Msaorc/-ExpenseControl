@@ -38,24 +38,33 @@ func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *
 	err := json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expenseOriginEntity, err := entity.NewExpenseOrigin(expenseOrigin.Description)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = eoh.ExpenseOriginDB.Create(expenseOriginEntity)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -77,8 +86,11 @@ func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *
 	expensesOrigin, err := eo.ExpenseOriginDB.FindAll()
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -103,16 +115,22 @@ func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r 
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: "Id invalido!"}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID inválido.",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expenseOrigin, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -138,16 +156,22 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: "Id invalido!"}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID inválido.",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	_, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -155,24 +179,33 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 	err = json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expenseOrigin.ID, err = entityPKG.ParseID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = eo.ExpenseOriginDB.Update(&expenseOrigin)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -195,24 +228,33 @@ func (eo *ExpenseOriginlHandler) DeleteExpenseOrigin(w http.ResponseWriter, r *h
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: "Id invalido!"}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID inválido.",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	_, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = eo.ExpenseOriginDB.Delete(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
