@@ -917,6 +917,9 @@
             "properties": {
                 "access_token": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -928,6 +931,12 @@
                 },
                 "description": {
                     "type": "string"
+                },
+                "expenseLevel": {
+                    "$ref": "#/definitions/entity.ExpenseLevel"
+                },
+                "expenseOrigin": {
+                    "$ref": "#/definitions/entity.ExpenseOrigin"
                 },
                 "id": {
                     "type": "string"

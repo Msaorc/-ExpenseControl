@@ -923,6 +923,9 @@ const docTemplate = `{
             "properties": {
                 "access_token": {
                     "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -934,6 +937,12 @@ const docTemplate = `{
                 },
                 "description": {
                     "type": "string"
+                },
+                "expenseLevel": {
+                    "$ref": "#/definitions/entity.ExpenseLevel"
+                },
+                "expenseOrigin": {
+                    "$ref": "#/definitions/entity.ExpenseOrigin"
                 },
                 "id": {
                     "type": "string"
