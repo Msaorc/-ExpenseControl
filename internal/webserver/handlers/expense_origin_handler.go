@@ -118,7 +118,7 @@ func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r 
 		w.WriteHeader(http.StatusOK)
 		errorMessage := dto.Error{
 			Code:    http.StatusNotFound,
-			Message: "ID inválido.",
+			Message: "ID Inválido.",
 		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
@@ -159,7 +159,7 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 		w.WriteHeader(http.StatusOK)
 		errorMessage := dto.Error{
 			Code:    http.StatusNotFound,
-			Message: "ID inválido.",
+			Message: "ID Inválido.",
 		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
@@ -231,7 +231,7 @@ func (eo *ExpenseOriginlHandler) DeleteExpenseOrigin(w http.ResponseWriter, r *h
 		w.WriteHeader(http.StatusOK)
 		errorMessage := dto.Error{
 			Code:    http.StatusNotFound,
-			Message: "ID inválido.",
+			Message: "ID Inválido.",
 		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return

@@ -38,24 +38,33 @@ func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http
 	err := json.NewDecoder(r.Body).Decode(&expenseLevel)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	ExpenseLevelEntity, err := entity.NewExpenseLevel(expenseLevel.Description, expenseLevel.Color)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = el.ExpenseLevelDB.Create(ExpenseLevelEntity)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -77,8 +86,11 @@ func (el *ExpenseLevelHandler) FindAllExpenseLevel(w http.ResponseWriter, r *htt
 	expensesLevel, err := el.ExpenseLevelDB.FindAll()
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -103,16 +115,22 @@ func (el *ExpenseLevelHandler) FindExpenseLevelById(w http.ResponseWriter, r *ht
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: "Id invalido!"}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID Inválido.",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expenseOrigin, err := el.ExpenseLevelDB.FindByID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -138,16 +156,22 @@ func (el *ExpenseLevelHandler) UpdateExpenseLevel(w http.ResponseWriter, r *http
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: "Id invalido!"}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID Inválido.",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	_, err := el.ExpenseLevelDB.FindByID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -155,24 +179,33 @@ func (el *ExpenseLevelHandler) UpdateExpenseLevel(w http.ResponseWriter, r *http
 	err = json.NewDecoder(r.Body).Decode(&expenseLevel)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	expenseLevel.ID, err = entityPKG.ParseID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = el.ExpenseLevelDB.Update(&expenseLevel)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
@@ -195,24 +228,33 @@ func (el *ExpenseLevelHandler) DeleteExpenseLevel(w http.ResponseWriter, r *http
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: "Id invalido!"}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID Inválido.",
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	_, err := el.ExpenseLevelDB.FindByID(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
 	err = el.ExpenseLevelDB.Delete(id)
 	if err != nil {
 		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		errorMessage := dto.Error{Message: err.Error()}
+		w.WriteHeader(http.StatusOK)
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
