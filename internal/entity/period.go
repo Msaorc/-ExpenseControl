@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Msaorc/ExpenseControlAPI/pkg/date"
 	"github.com/Msaorc/ExpenseControlAPI/pkg/entity"
 )
 
@@ -12,6 +13,8 @@ var ErrPeriodIdIsInvalid = errors.New("Expense: ID invalid")
 var ErrPeriodDescriptionIsRequired = errors.New("Period: Description is Required")
 var ErrPeriodInitialDateIsRequired = errors.New("Period: InitialDate is Required")
 var ErrPeriodFinalDateIsRequired = errors.New("Period: FinalDate is Required")
+var ErrPeriodInitalDateNotBefore = errors.New("Period: Start date cannot be greater than after all")
+var ErrPeriodInitalDateNotEquals = errors.New("Period: The start date cannot be the same as the end date")
 
 type Period struct {
 	ID          entity.ID `gorm:"primaryKey" json:"id"`
@@ -21,12 +24,17 @@ type Period struct {
 }
 
 func NewPeriod(description string, initialDate string, finalDate string) (*Period, error) {
-	layoutDate := "2006-01-02"
-	iDate, err := time.Parse(layoutDate, initialDate)
+	if initialDate == "" {
+		return nil, ErrPeriodInitialDateIsRequired
+	}
+	if finalDate == "" {
+		return nil, ErrPeriodFinalDateIsRequired
+	}
+	iDate, err := time.Parse(date.DateLayout, initialDate)
 	if err != nil {
 		return nil, err
 	}
-	fDate, err := time.Parse(layoutDate, initialDate)
+	fDate, err := time.Parse(date.DateLayout, finalDate)
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +43,10 @@ func NewPeriod(description string, initialDate string, finalDate string) (*Perio
 		Description: description,
 		InitalDate:  iDate,
 		FinalDate:   fDate,
+	}
+	err = period.Validate()
+	if err != nil {
+		return nil, err
 	}
 	return period, nil
 }
@@ -54,6 +66,12 @@ func (p *Period) Validate() error {
 	}
 	if p.FinalDate.String() == "" {
 		return ErrPeriodFinalDateIsRequired
+	}
+	if p.FinalDate.Before(p.InitalDate) {
+		return ErrPeriodInitalDateNotBefore
+	}
+	if p.InitalDate.Equal(p.FinalDate) {
+		return ErrPeriodInitalDateNotEquals
 	}
 	return nil
 }
