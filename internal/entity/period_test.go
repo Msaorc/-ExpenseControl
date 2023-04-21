@@ -39,3 +39,17 @@ func TestPeriodWhenFinalDateIsRequired(t *testing.T) {
 	assert.Error(t, err)
 	assert.Equal(t, ErrPeriodFinalDateIsRequired, err)
 }
+
+func TestPeriodWhenInitalDateIsBefore(t *testing.T) {
+	period, err := NewPeriod("Maio", "2023-04-11", "2023-04-09")
+	assert.Nil(t, period)
+	assert.Error(t, err)
+	assert.Equal(t, ErrPeriodInitalDateNotBefore, err)
+}
+
+func TestPeriodWhenInitalDateEqualsFinalDate(t *testing.T) {
+	period, err := NewPeriod("Maio", "2023-04-11", "2023-04-11")
+	assert.Nil(t, period)
+	assert.Error(t, err)
+	assert.Equal(t, ErrPeriodInitalDateNotEqualsFinalDate, err)
+}

@@ -14,7 +14,7 @@ var ErrPeriodDescriptionIsRequired = errors.New("Period: Description is Required
 var ErrPeriodInitialDateIsRequired = errors.New("Period: InitialDate is Required")
 var ErrPeriodFinalDateIsRequired = errors.New("Period: FinalDate is Required")
 var ErrPeriodInitalDateNotBefore = errors.New("Period: Start date cannot be greater than after all")
-var ErrPeriodInitalDateNotEquals = errors.New("Period: The start date cannot be the same as the end date")
+var ErrPeriodInitalDateNotEqualsFinalDate = errors.New("Period: The start date cannot be the same as the end date")
 
 type Period struct {
 	ID          entity.ID `gorm:"primaryKey" json:"id"`
@@ -71,7 +71,7 @@ func (p *Period) Validate() error {
 		return ErrPeriodInitalDateNotBefore
 	}
 	if p.InitalDate.Equal(p.FinalDate) {
-		return ErrPeriodInitalDateNotEquals
+		return ErrPeriodInitalDateNotEqualsFinalDate
 	}
 	return nil
 }
