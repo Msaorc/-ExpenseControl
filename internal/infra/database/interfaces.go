@@ -32,3 +32,11 @@ type ExpenseInterface interface {
 	Update(expense *entity.Expense) error
 	Delete(id string) error
 }
+
+type PeriodInterface interface {
+	Create(period *entity.Period) error
+	FindAll() ([]entity.Period, error)
+	FindByID(id string) (*entity.Period, error)
+	Update(period *entity.Period) error
+	Delete(id string) error
+}
