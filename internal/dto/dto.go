@@ -46,3 +46,9 @@ type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
+
+type PeriodInput struct {
+	Description string `json:"description"`
+	InitialDate string `json:"initial_date"`
+	FinalDate   string `json:"final_date"`
+}
