@@ -19,7 +19,7 @@ var ErrPeriodInitalDateNotEqualsFinalDate = errors.New("Period: The start date c
 type Period struct {
 	ID          entity.ID `gorm:"primaryKey" json:"id"`
 	Description string    `json:"description"`
-	InitalDate  time.Time `json:"initial_date"`
+	InitialDate time.Time `json:"initial_date"`
 	FinalDate   time.Time `json:"final_date"`
 }
 
@@ -41,7 +41,7 @@ func NewPeriod(description string, initialDate string, finalDate string) (*Perio
 	period := &Period{
 		ID:          entity.NewID(),
 		Description: description,
-		InitalDate:  iDate,
+		InitialDate:  iDate,
 		FinalDate:   fDate,
 	}
 	err = period.Validate()
@@ -61,16 +61,16 @@ func (p *Period) Validate() error {
 	if p.Description == "" {
 		return ErrPeriodDescriptionIsRequired
 	}
-	if p.InitalDate.String() == "" {
+	if p.InitialDate.String() == "" {
 		return ErrPeriodInitialDateIsRequired
 	}
 	if p.FinalDate.String() == "" {
 		return ErrPeriodFinalDateIsRequired
 	}
-	if p.FinalDate.Before(p.InitalDate) {
+	if p.FinalDate.Before(p.InitialDate) {
 		return ErrPeriodInitalDateNotBefore
 	}
-	if p.InitalDate.Equal(p.FinalDate) {
+	if p.InitialDate.Equal(p.FinalDate) {
 		return ErrPeriodInitalDateNotEqualsFinalDate
 	}
 	return nil

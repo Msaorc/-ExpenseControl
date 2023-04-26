@@ -43,7 +43,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{}, &entity.User{})
+	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{}, &entity.User{}, &entity.Period{})
 	expenseLevelDB := database.NewExpenseLevelDB(db)
 	expenseLevelHander := handlers.NewExpenseLevelHandler(expenseLevelDB)
 	expenseOriginDB := database.NewExpenseOriginDB(db)
