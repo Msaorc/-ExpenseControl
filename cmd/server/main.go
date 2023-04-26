@@ -51,6 +51,8 @@ func main() {
 	expenseDB := database.NewExpenseDB(db)
 	expenseHander := handlers.NewExpenseHandler(expenseDB)
 	userHandler := handlers.NewUserHandler(database.NewUserDB(db), config.TokenAuth, config.JwtExperesIn)
+	periodDB := database.NewPeriodDB(db)
+	periodHandler := handlers.NewPeriodHandler(periodDB)
 	routers := chi.NewRouter()
 	routers.Use(middleware.Logger)
 	// routers.Use(middleware.Recoverer)
@@ -99,6 +101,16 @@ func main() {
 		r.Get("/{id}", expenseHander.FindExpenseById)
 		r.Put("/{id}", expenseHander.UpdateExpense)
 		r.Delete("/{id}", expenseHander.DeleteExpense)
+	})
+
+	routers.Route("/period", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Get("/", periodHandler.FindAllPeriod)
+		r.Post("/", periodHandler.CreatePeriod)
+		r.Get("/{id}", periodHandler.FindPeriodByID)
+		r.Put("/{id}", periodHandler.UpdatePeriod)
+		r.Delete("/{id}", periodHandler.DeletePeriod)
 	})
 
 	routers.Post("/users", userHandler.CreateUser)

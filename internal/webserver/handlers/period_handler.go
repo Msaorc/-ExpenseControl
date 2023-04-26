@@ -7,21 +7,23 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
+	entityPKG "github.com/Msaorc/ExpenseControlAPI/pkg/entity"
+	"github.com/go-chi/chi"
 )
 
 type PeriodHandler struct {
-	PeriodOriginDB database.PeriodInterface
+	PeriodDB database.PeriodInterface
 }
 
-func NewPeriodDB(db database.PeriodInterface) *PeriodHandler {
-	return &PeriodHandler{PeriodOriginDB: db}
+func NewPeriodHandler(db database.PeriodInterface) *PeriodHandler {
+	return &PeriodHandler{PeriodDB: db}
 }
 
 func (ph *PeriodHandler) CreatePeriod(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
 	var period dto.PeriodInput
 	err := json.NewDecoder(r.Body).Decode(&period)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		errorMessage := dto.Error{
 			Code:    http.StatusInternalServerError,
@@ -32,7 +34,6 @@ func (ph *PeriodHandler) CreatePeriod(w http.ResponseWriter, r *http.Request) {
 	}
 	periodEntity, err := entity.NewPeriod(period.Description, period.InitialDate, period.FinalDate)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		errorMessage := dto.Error{
 			Code:    http.StatusInternalServerError,
@@ -41,9 +42,8 @@ func (ph *PeriodHandler) CreatePeriod(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
-	err = ph.PeriodOriginDB.Create(periodEntity)
+	err = ph.PeriodDB.Create(periodEntity)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		errorMessage := dto.Error{
 			Code:    http.StatusInternalServerError,
@@ -52,6 +52,127 @@ func (ph *PeriodHandler) CreatePeriod(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errorMessage)
 		return
 	}
-	w.Header().Set("content-type", "application/json")
 	w.WriteHeader(http.StatusCreated)
+}
+
+func (ph *PeriodHandler) FindAllPeriod(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "applcation/json")
+	w.WriteHeader(http.StatusOK)
+	period, err := ph.PeriodDB.FindAll()
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	json.NewEncoder(w).Encode(period)
+}
+
+func (ph *PeriodHandler) FindPeriodByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: "ID inválido",
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	period, err := ph.PeriodDB.FindByID(id)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID inválido",
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	json.NewEncoder(w).Encode(period)
+}
+
+func (ph *PeriodHandler) UpdatePeriod(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID inválido",
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	_, err := ph.PeriodDB.FindByID(id)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	var period entity.Period
+	err = json.NewDecoder(r.Body).Decode(&period)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	period.ID, err = entityPKG.ParseID(id)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	err = ph.PeriodDB.Update(&period)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+}
+
+func (ph *PeriodHandler) DeletePeriod(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		errorMessage := dto.Error{
+			Code:    http.StatusNotFound,
+			Message: "ID inválido",
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	_, err := ph.PeriodDB.FindByID(id)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
+	err = ph.PeriodDB.Delete(id)
+	if err != nil {
+		errorMessage := dto.Error{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		}
+		json.NewEncoder(w).Encode(errorMessage)
+		return
+	}
 }
