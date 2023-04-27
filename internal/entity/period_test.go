@@ -15,8 +15,8 @@ func TestNewPeriod(t *testing.T) {
 	assert.Equal(t, period.Description, "Maio")
 	assert.Equal(t, period.InitialDate.String(), "2023-04-11 00:00:00 +0000 UTC")
 	assert.Equal(t, period.FinalDate.String(), "2023-05-10 00:00:00 +0000 UTC")
-	assert.Equal(t, period.InitialDate.Format(date.DateLayout), "2023-04-11")
-	assert.Equal(t, period.FinalDate.Format(date.DateLayout), "2023-05-10")
+	assert.Equal(t, date.ConvertDateToString(period.InitialDate), "2023-04-11")
+	assert.Equal(t, date.ConvertDateToString(period.FinalDate), "2023-05-10")
 }
 
 func TestPeriodWhenDescriptionIsRequired(t *testing.T) {

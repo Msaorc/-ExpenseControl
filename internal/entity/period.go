@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/pkg/date"
 	"github.com/Msaorc/ExpenseControlAPI/pkg/entity"
 )
@@ -30,25 +31,26 @@ func NewPeriod(description string, initialDate string, finalDate string) (*Perio
 	if finalDate == "" {
 		return nil, ErrPeriodFinalDateIsRequired
 	}
-	iDate, err := time.Parse(date.DateLayout, initialDate)
-	if err != nil {
-		return nil, err
-	}
-	fDate, err := time.Parse(date.DateLayout, finalDate)
-	if err != nil {
-		return nil, err
-	}
 	period := &Period{
 		ID:          entity.NewID(),
 		Description: description,
-		InitialDate:  iDate,
-		FinalDate:   fDate,
+		InitialDate: date.ConvertDateToTime(initialDate),
+		FinalDate:   date.ConvertDateToTime(finalDate),
 	}
-	err = period.Validate()
+	err := period.Validate()
 	if err != nil {
 		return nil, err
 	}
 	return period, nil
+}
+
+func UpdatePeriod(id entity.ID, periodDto dto.PeriodInput) *Period {
+	return &Period{
+		ID:          id,
+		Description: periodDto.Description,
+		InitialDate: date.ConvertDateToTime(periodDto.InitialDate),
+		FinalDate:   date.ConvertDateToTime(periodDto.FinalDate),
+	}
 }
 
 func (p *Period) Validate() error {

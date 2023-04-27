@@ -42,7 +42,7 @@ type UserAuthenticateOutput struct {
 	UserID      string `json:"user_id"`
 }
 
-type Error struct {
+type StatusMessage struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
