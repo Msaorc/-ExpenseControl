@@ -20,6 +20,18 @@ func NewPeriodHandler(db database.PeriodInterface) *PeriodHandler {
 	return &PeriodHandler{PeriodDB: db}
 }
 
+// Create Period godoc
+// @Summary      Create Period
+// @Description  Create Period
+// @Tags         Period
+// @Accept       json
+// @Produce      json
+// @Param        request   body      dto.PeriodInput  true  "period request"
+// @Success      201  {object}  dto.StatusMessage
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
+// @Router       /period [post]
+// @Security ApiKeyAuth
 func (ph *PeriodHandler) CreatePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	var period dto.PeriodInput
@@ -41,6 +53,17 @@ func (ph *PeriodHandler) CreatePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "Period created successfully.", w)
 }
 
+// FindAll Period godoc
+// @Summary      FindAll Period
+// @Description  FindAll Period
+// @Tags         Period
+// @Accept       json
+// @Produce      json
+// @Success      200  {array}   entity.Period
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
+// @Router       /period [get]
+// @Security ApiKeyAuth
 func (ph *PeriodHandler) FindAllPeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	period, err := ph.PeriodDB.FindAll()
@@ -51,6 +74,18 @@ func (ph *PeriodHandler) FindAllPeriod(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(period)
 }
 
+// FindById Period godoc
+// @Summary      FindById Period
+// @Description  FindById Period
+// @Tags         Period
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Period ID" Format(uuid)
+// @Success      200  {object}  entity.Period
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
+// @Router       /period/{id} [get]
+// @Security ApiKeyAuth
 func (ph *PeriodHandler) FindPeriodByID(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
@@ -66,6 +101,19 @@ func (ph *PeriodHandler) FindPeriodByID(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(period)
 }
 
+// Update Period godoc
+// @Summary      Update Period
+// @Description  Update Period
+// @Tags         Period
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Period ID" Format(uuid)
+// @Param        request   body      dto.PeriodInput  true  "Period request"
+// @Success      200  {object}  dto.StatusMessage
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
+// @Router       /period/{id} [put]
+// @Security ApiKeyAuth
 func (ph *PeriodHandler) UpdatePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
@@ -89,7 +137,11 @@ func (ph *PeriodHandler) UpdatePeriod(w http.ResponseWriter, r *http.Request) {
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	period := entity.UpdatePeriod(uuidEntity, periodDto)
+	period, err := entity.UpdatePeriod(uuidEntity, periodDto)
+	if err != nil {
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
+		return
+	}
 	err = ph.PeriodDB.Update(period)
 	if err != nil {
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
@@ -98,6 +150,18 @@ func (ph *PeriodHandler) UpdatePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Period updated successfully.", w)
 }
 
+// Delete Period godoc
+// @Summary      Delete Period
+// @Description  Delete Period
+// @Tags         Period
+// @Accept       json
+// @Produce      json
+// @Param        id    path      string  true  "Period ID" Format(uuid)
+// @Success      200  {object}  dto.StatusMessage
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
+// @Router       /period/{id} [delete]
+// @Security ApiKeyAuth
 func (ph *PeriodHandler) DeletePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")

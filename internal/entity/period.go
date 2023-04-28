@@ -44,13 +44,18 @@ func NewPeriod(description string, initialDate string, finalDate string) (*Perio
 	return period, nil
 }
 
-func UpdatePeriod(id entity.ID, periodDto dto.PeriodInput) *Period {
-	return &Period{
+func UpdatePeriod(id entity.ID, periodDto dto.PeriodInput) (*Period, error) {
+	period := &Period{
 		ID:          id,
 		Description: periodDto.Description,
 		InitialDate: date.ConvertDateToTime(periodDto.InitialDate),
 		FinalDate:   date.ConvertDateToTime(periodDto.FinalDate),
 	}
+	err := period.Validate()
+	if err != nil {
+		return nil, err
+	}
+	return period, nil
 }
 
 func (p *Period) Validate() error {

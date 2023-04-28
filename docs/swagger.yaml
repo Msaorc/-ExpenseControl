@@ -1,12 +1,5 @@
 basePath: /
 definitions:
-  dto.Error:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
   dto.ExepnseOrigin:
     properties:
       description:
@@ -30,6 +23,22 @@ definitions:
       color:
         type: string
       description:
+        type: string
+    type: object
+  dto.PeriodInput:
+    properties:
+      description:
+        type: string
+      final_date:
+        type: string
+      initial_date:
+        type: string
+    type: object
+  dto.StatusMessage:
+    properties:
+      code:
+        type: integer
+      message:
         type: string
     type: object
   dto.User:
@@ -92,6 +101,17 @@ definitions:
       id:
         type: string
     type: object
+  entity.Period:
+    properties:
+      description:
+        type: string
+      final_date:
+        type: string
+      id:
+        type: string
+      initial_date:
+        type: string
+    type: object
 host: localhost:8081
 info:
   contact:
@@ -132,11 +152,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: FindAll Expense
@@ -158,14 +178,16 @@ paths:
       responses:
         "201":
           description: Created
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Create Expense
@@ -188,14 +210,16 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Delete Expense
@@ -222,11 +246,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: FindById Expense
@@ -257,11 +281,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Update Expense
@@ -284,11 +308,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: FindAll ExpenseLevel
@@ -313,11 +337,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Create ExpenseLevel
@@ -340,14 +364,16 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Delete ExpenseLevel
@@ -374,11 +400,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: FindById ExpenseLevel
@@ -406,14 +432,16 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Update ExpenseLevel
@@ -436,11 +464,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: FindAll ExpenseOrigin
@@ -462,14 +490,16 @@ paths:
       responses:
         "201":
           description: Created
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Create ExpenseOrigin
@@ -492,14 +522,16 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Delete ExpenseOrigin
@@ -526,11 +558,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: FindById ExpenseOrigin
@@ -558,19 +590,179 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       security:
       - ApiKeyAuth: []
       summary: Update ExpenseOrigin
       tags:
       - ExpensesOrigin
+  /period:
+    get:
+      consumes:
+      - application/json
+      description: FindAll Period
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Period'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: FindAll Period
+      tags:
+      - Period
+    post:
+      consumes:
+      - application/json
+      description: Create Period
+      parameters:
+      - description: period request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PeriodInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Period
+      tags:
+      - Period
+  /period/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Period
+      parameters:
+      - description: Period ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Period
+      tags:
+      - Period
+    get:
+      consumes:
+      - application/json
+      description: FindById Period
+      parameters:
+      - description: Period ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Period'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: FindById Period
+      tags:
+      - Period
+    put:
+      consumes:
+      - application/json
+      description: Update Period
+      parameters:
+      - description: Period ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Period request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PeriodInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Period
+      tags:
+      - Period
   /users:
     post:
       consumes:
@@ -588,14 +780,16 @@ paths:
       responses:
         "201":
           description: Created
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       summary: Create User
       tags:
       - Users
@@ -621,11 +815,11 @@ paths:
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.Error'
+            $ref: '#/definitions/dto.StatusMessage'
       summary: Authenticate User
       tags:
       - Users
