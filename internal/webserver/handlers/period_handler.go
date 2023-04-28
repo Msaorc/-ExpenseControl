@@ -45,15 +45,14 @@ func (ph *PeriodHandler) FindAllPeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	period, err := ph.PeriodDB.FindAll()
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	json.NewEncoder(w).Encode(period)
 }
 
 func (ph *PeriodHandler) FindPeriodByID(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, "invalid ID", w)
@@ -61,7 +60,7 @@ func (ph *PeriodHandler) FindPeriodByID(w http.ResponseWriter, r *http.Request) 
 	}
 	period, err := ph.PeriodDB.FindByID(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	json.NewEncoder(w).Encode(period)
@@ -71,12 +70,12 @@ func (ph *PeriodHandler) UpdatePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, "invalid ID", w)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := ph.PeriodDB.FindByID(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	var periodDto dto.PeriodInput
@@ -103,12 +102,12 @@ func (ph *PeriodHandler) DeletePeriod(w http.ResponseWriter, r *http.Request) {
 	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, "invalid ID", w)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := ph.PeriodDB.FindByID(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	err = ph.PeriodDB.Delete(id)

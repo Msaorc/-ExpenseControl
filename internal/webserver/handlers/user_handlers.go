@@ -9,6 +9,7 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
+	"github.com/Msaorc/ExpenseControlAPI/pkg/handler"
 	"github.com/go-chi/jwtauth"
 )
 
@@ -34,53 +35,37 @@ func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExperies
 // @Produce      json
 // @Param        request   body      dto.User  true  "user request"
 // @Success      201
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /users [post]
 func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userInput dto.User
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: err.Error()}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetHeader(w, http.StatusOK)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	user, _ := u.UserDB.FindByEmail(userInput.Email)
 	if user != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
+		handler.SetHeader(w, http.StatusOK)
 		message := fmt.Sprintf("Já existe um usuário com o email (%s) cadastrado!", userInput.Email)
-		errorMessage := dto.Error{
-			Code:    http.StatusAlreadyReported,
-			Message: message}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusAlreadyReported, message, w)
 		return
 	}
 	user, err = entity.NewUser(userInput.Name, userInput.Email, userInput.Password)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error()}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetHeader(w, http.StatusOK)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = u.UserDB.Create(user)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error()}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetHeader(w, http.StatusOK)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
+	handler.SetHeader(w, http.StatusCreated)
 }
 
 // Authenticate User godoc
@@ -91,41 +76,24 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        request   body      dto.UserAuthenticate  true  "authenticate request"
 // @Success      200  {object}  dto.UserAuthenticateOutput
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /users/authenticate [post]
 func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	var userAuthenticate dto.UserAuthenticate
 	err := json.NewDecoder(r.Body).Decode(&userAuthenticate)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	user, err := u.UserDB.FindByEmail(userAuthenticate.Email)
 	if user == nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	if !user.ValidatePassword(userAuthenticate.Password) {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusUnauthorized,
-			Message: "Incorrect Password, check!",
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusUnauthorized, err.Error(), w)
 		return
 	}
 	_, token, _ := u.Jwt.Encode(map[string]interface{}{
@@ -137,7 +105,5 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		UserID:      user.ID.String(),
 		AccessToken: token,
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)
 }

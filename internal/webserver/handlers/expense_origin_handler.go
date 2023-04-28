@@ -8,6 +8,7 @@ import (
 	"github.com/Msaorc/ExpenseControlAPI/internal/entity"
 	"github.com/Msaorc/ExpenseControlAPI/internal/infra/database"
 	entityPKG "github.com/Msaorc/ExpenseControlAPI/pkg/entity"
+	"github.com/Msaorc/ExpenseControlAPI/pkg/handler"
 	"github.com/go-chi/chi"
 )
 
@@ -29,46 +30,31 @@ func NewExpenseOriginHandler(db database.ExpenseOriginInterface) *ExpenseOriginl
 // @Produce      json
 // @Param        request   body      dto.ExepnseOrigin  true  "expenseorigin request"
 // @Success      201
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin [post]
 // @Security ApiKeyAuth
 func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *http.Request) {
 	var expenseOrigin dto.ExepnseOrigin
 	err := json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetHeader(w, http.StatusOK)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expenseOriginEntity, err := entity.NewExpenseOrigin(expenseOrigin.Description)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetHeader(w, http.StatusOK)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = eoh.ExpenseOriginDB.Create(expenseOriginEntity)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetHeader(w, http.StatusOK)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
+	handler.SetHeader(w, http.StatusCreated)
 }
 
 // FindAll ExpenseOrigin godoc
@@ -78,24 +64,17 @@ func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *
 // @Accept       json
 // @Produce      json
 // @Success      200  {array}   entity.ExpenseOrigin
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin [get]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	expensesOrigin, err := eo.ExpenseOriginDB.FindAll()
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
-	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(expensesOrigin)
 }
 
@@ -107,35 +86,22 @@ func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *
 // @Produce      json
 // @Param        id    path      string  true  "ExpenseOrigin ID" Format(uuid)
 // @Success      200  {object}  entity.ExpenseOrigin
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin/{id} [get]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: "ID Inválido.",
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	expenseOrigin, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(expenseOrigin)
 }
 
@@ -148,68 +114,38 @@ func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r 
 // @Param        id    path      string  true  "ExpenseOrigin ID" Format(uuid)
 // @Param        request   body      dto.ExepnseOrigin  true  "ExpenseOrigin request"
 // @Success      200
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin/{id} [put]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: "ID Inválido.",
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	var expenseOrigin entity.ExpenseOrigin
 	err = json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expenseOrigin.ID, err = entityPKG.ParseID(id)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = eo.ExpenseOriginDB.Update(&expenseOrigin)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
 
 // Delete ExpenseOrigin godoc
@@ -220,43 +156,25 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 // @Produce      json
 // @Param        id    path      string  true  "ExpenseOrigin ID" Format(uuid)
 // @Success      200
-// @Failure      404  {object}  dto.Error
-// @Failure      500  {object}  dto.Error
+// @Failure      404  {object}  dto.StatusMessage
+// @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin/{id} [delete]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) DeleteExpenseOrigin(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: "ID Inválido.",
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusNotFound,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	err = eo.ExpenseOriginDB.Delete(id)
 	if err != nil {
-		w.Header().Set("content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		errorMessage := dto.Error{
-			Code:    http.StatusInternalServerError,
-			Message: err.Error(),
-		}
-		json.NewEncoder(w).Encode(errorMessage)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	w.WriteHeader(http.StatusOK)
 }
