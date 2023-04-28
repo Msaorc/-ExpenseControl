@@ -34,38 +34,35 @@ func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExperies
 // @Accept       json
 // @Produce      json
 // @Param        request   body      dto.User  true  "user request"
-// @Success      201
+// @Success      201  {object}  dto.StatusMessage
 // @Failure      404  {object}  dto.StatusMessage
 // @Failure      500  {object}  dto.StatusMessage
 // @Router       /users [post]
 func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	var userInput dto.User
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
-		handler.SetHeader(w, http.StatusOK)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	user, _ := u.UserDB.FindByEmail(userInput.Email)
 	if user != nil {
-		handler.SetHeader(w, http.StatusOK)
 		message := fmt.Sprintf("Já existe um usuário com o email (%s) cadastrado!", userInput.Email)
 		handler.SetReturnStatusMessageHandlers(http.StatusAlreadyReported, message, w)
 		return
 	}
 	user, err = entity.NewUser(userInput.Name, userInput.Email, userInput.Password)
 	if err != nil {
-		handler.SetHeader(w, http.StatusOK)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = u.UserDB.Create(user)
 	if err != nil {
-		handler.SetHeader(w, http.StatusOK)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	handler.SetHeader(w, http.StatusCreated)
+	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "User created successfully.", w)
 }
 
 // Authenticate User godoc

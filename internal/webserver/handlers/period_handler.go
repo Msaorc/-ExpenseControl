@@ -115,4 +115,5 @@ func (ph *PeriodHandler) DeletePeriod(w http.ResponseWriter, r *http.Request) {
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Successfully deleted Period.", w)
 }

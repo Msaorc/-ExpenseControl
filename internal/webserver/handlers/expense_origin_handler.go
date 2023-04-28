@@ -29,32 +29,30 @@ func NewExpenseOriginHandler(db database.ExpenseOriginInterface) *ExpenseOriginl
 // @Accept       json
 // @Produce      json
 // @Param        request   body      dto.ExepnseOrigin  true  "expenseorigin request"
-// @Success      201
+// @Success      201  {object}  dto.StatusMessage
 // @Failure      404  {object}  dto.StatusMessage
 // @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin [post]
 // @Security ApiKeyAuth
 func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *http.Request) {
+	handler.SetHeader(w, http.StatusOK)
 	var expenseOrigin dto.ExepnseOrigin
 	err := json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
-		handler.SetHeader(w, http.StatusOK)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expenseOriginEntity, err := entity.NewExpenseOrigin(expenseOrigin.Description)
 	if err != nil {
-		handler.SetHeader(w, http.StatusOK)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = eoh.ExpenseOriginDB.Create(expenseOriginEntity)
 	if err != nil {
-		handler.SetHeader(w, http.StatusOK)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
-	handler.SetHeader(w, http.StatusCreated)
+	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "ExpenseLevel created successfully.", w)
 }
 
 // FindAll ExpenseOrigin godoc
@@ -113,7 +111,7 @@ func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r 
 // @Produce      json
 // @Param        id    path      string  true  "ExpenseOrigin ID" Format(uuid)
 // @Param        request   body      dto.ExepnseOrigin  true  "ExpenseOrigin request"
-// @Success      200
+// @Success      200  {object}  dto.StatusMessage
 // @Failure      404  {object}  dto.StatusMessage
 // @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin/{id} [put]
@@ -146,6 +144,7 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetReturnStatusMessageHandlers(http.StatusOK, "ExpenseOrigin updated successfully.", w)
 }
 
 // Delete ExpenseOrigin godoc
@@ -155,7 +154,7 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 // @Accept       json
 // @Produce      json
 // @Param        id    path      string  true  "ExpenseOrigin ID" Format(uuid)
-// @Success      200
+// @Success      200  {object}  dto.StatusMessage
 // @Failure      404  {object}  dto.StatusMessage
 // @Failure      500  {object}  dto.StatusMessage
 // @Router       /expenseorigin/{id} [delete]
@@ -177,4 +176,5 @@ func (eo *ExpenseOriginlHandler) DeleteExpenseOrigin(w http.ResponseWriter, r *h
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Successfully deleted ExpenseOrigin.", w)
 }
