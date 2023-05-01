@@ -22,8 +22,7 @@ func NewExpenseLevel(description, color string) (*ExpenseLevel, error) {
 		Description: description,
 		Color:       color,
 	}
-	err := exLevel.validate()
-	if err != nil {
+	if err := exLevel.validate(); err != nil {
 		return nil, err
 	}
 	return exLevel, nil

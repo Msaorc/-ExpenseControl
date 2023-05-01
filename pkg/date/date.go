@@ -12,3 +12,8 @@ func ConvertDateToTime(date string) time.Time {
 	convertedDate, _ := time.Parse(dateLayout, date)
 	return convertedDate
 }
+
+func Validate(date string) error {
+	_, err := time.Parse(dateLayout, date)
+	return err
+}
