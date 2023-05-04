@@ -27,8 +27,10 @@ func (p *Period) FindAll() ([]entity.Period, error) {
 
 func (p *Period) FindByID(id string) (*entity.Period, error) {
 	var period *entity.Period
-	err := p.DB.First(&period, "id = ?", id).Error
-	return period, err
+	if err := p.DB.First(&period, "id = ?", id).Error; err != nil {
+		return nil, err
+	}
+	return period, nil
 }
 
 func (p *Period) Update(period *entity.Period) error {
