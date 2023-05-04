@@ -25,10 +25,12 @@ func (i *IncomeDB) FindAll() ([]entity.Income, error) {
 	return income, nil
 }
 
-func (i *IncomeDB) FindByID(id string) (*entity.Income, error){
-	var income *entity.Income
-	if err := i.DB.First(&income, "id = ?", id).error; err != nil {
-		return nil, err
-	}
-	return income, nil
-}
+// func (i *IncomeDB) FindByID(id string) (*entity.Income, error){
+// 	var income *entity.Income
+// 	if err := i.DB.First(&income, "id = ?", id).error; err != nil {
+// 		return nil, err
+// 	}
+// 	return income, nil
+// }
+
+// testando o commit
