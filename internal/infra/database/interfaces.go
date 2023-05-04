@@ -45,4 +45,6 @@ type IncomeInterface interface {
 	Create(income *entity.Income) error
 	FindAll() ([]entity.Income, error)
 	FindByID(id string) (*entity.Income, err)
+	Update(income *entity.Income) err
+	Delete(id string) error
 }

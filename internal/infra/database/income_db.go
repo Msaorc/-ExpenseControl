@@ -32,3 +32,19 @@ func (i *IncomeDB) FindByID(id string) (*entity.Income, error){
 	}
 	return income, nil
 }
+
+func (i *IncomeDB) Update(income *entity.Income) error {
+	_, err := eo.FindByID(income.ID.String())
+	if err != nil {
+		return err
+	}
+	return eo.DB.Save(income).Error
+}
+
+func (i *ExpenseOrigin) Delete(id string) error {
+	income, err := i.FindByID(id)
+	if err != nil {
+		return err
+	}
+	return eo.DB.Delete(income).Error
+}
