@@ -13,38 +13,38 @@ func NewIncomeDB(db *gorm.DB) *IncomeDB {
 	return &IncomeDB{DB: db}
 }
 
-func (i *IncomeDB) CreateIncome(income *entity.Income) error {
+func (i *IncomeDB) Create(income *entity.Income) error {
 	return i.DB.Create(income).Error
 }
 
 func (i *IncomeDB) FindAll() ([]entity.Income, error) {
 	var income []entity.Income
-	if err := i.DB.Find(&income).error; err != nil {
+	if err := i.DB.Find(&income).Error; err != nil {
 		return nil, err
 	}
 	return income, nil
 }
 
-func (i *IncomeDB) FindByID(id string) (*entity.Income, error){
+func (i *IncomeDB) FindByID(id string) (*entity.Income, error) {
 	var income *entity.Income
-	if err := i.DB.First(&income, "id = ?", id).error; err != nil {
+	if err := i.DB.First(&income, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 	return income, nil
 }
 
 func (i *IncomeDB) Update(income *entity.Income) error {
-	_, err := eo.FindByID(income.ID.String())
+	_, err := i.FindByID(income.ID.String())
 	if err != nil {
 		return err
 	}
-	return eo.DB.Save(income).Error
+	return i.DB.Save(income).Error
 }
 
-func (i *ExpenseOrigin) Delete(id string) error {
+func (i *IncomeDB) Delete(id string) error {
 	income, err := i.FindByID(id)
 	if err != nil {
 		return err
 	}
-	return eo.DB.Delete(income).Error
+	return i.DB.Delete(income).Error
 }

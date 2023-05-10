@@ -44,7 +44,7 @@ type PeriodInterface interface {
 type IncomeInterface interface {
 	Create(income *entity.Income) error
 	FindAll() ([]entity.Income, error)
-	FindByID(id string) (*entity.Income, err)
-	Update(income *entity.Income) err
+	FindByID(id string) (*entity.Income, error)
+	Update(income *entity.Income) error
 	Delete(id string) error
 }
