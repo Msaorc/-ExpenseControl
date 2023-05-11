@@ -25,6 +25,26 @@ definitions:
       description:
         type: string
     type: object
+  dto.IncomeInput:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      value:
+        type: number
+    type: object
+  dto.IncomeOutput:
+    properties:
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      value:
+        type: number
+    type: object
   dto.PeriodInput:
     properties:
       description:
@@ -605,6 +625,162 @@ paths:
       summary: Update ExpenseOrigin
       tags:
       - ExpensesOrigin
+  /income:
+    get:
+      consumes:
+      - application/json
+      description: FindAll Income
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.IncomeOutput'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: FindAll Income
+      tags:
+      - Income
+    post:
+      consumes:
+      - application/json
+      description: Create Income
+      parameters:
+      - description: income request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.IncomeInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Income
+      tags:
+      - Income
+  /income/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Income
+      parameters:
+      - description: Income ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete Income
+      tags:
+      - Income
+    get:
+      consumes:
+      - application/json
+      description: FindById Income
+      parameters:
+      - description: Income ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.IncomeOutput'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: FindById Income
+      tags:
+      - Income
+    put:
+      consumes:
+      - application/json
+      description: Update Income
+      parameters:
+      - description: Income ID
+        format: uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: expense request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.IncomeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/dto.StatusMessage'
+      security:
+      - ApiKeyAuth: []
+      summary: Update Income
+      tags:
+      - Income
   /period:
     get:
       consumes:

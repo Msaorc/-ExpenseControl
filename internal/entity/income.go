@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Msaorc/ExpenseControlAPI/internal/dto"
 	"github.com/Msaorc/ExpenseControlAPI/pkg/date"
 	"github.com/Msaorc/ExpenseControlAPI/pkg/entity"
 )
@@ -36,6 +37,19 @@ func NewIncome(description string, value float64, dateIncome string) (*Income, e
 		return nil, err
 	}
 	return income, nil
+}
+
+func UpdateIncome(income dto.IncomeInput, id entity.ID) (*Income, error) {
+	incomeUpdate := &Income{
+		ID:          id,
+		Description: income.Description,
+		Value:       income.Value,
+		Date:        date.ConvertDateToTime(income.Date),
+	}
+	if err := incomeUpdate.validate(); err != nil {
+		return nil, err
+	}
+	return incomeUpdate, nil
 }
 
 func (i *Income) validate() error {

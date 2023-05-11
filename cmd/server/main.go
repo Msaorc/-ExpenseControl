@@ -43,7 +43,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{}, &entity.User{}, &entity.Period{})
+	db.AutoMigrate(&entity.ExpenseOrigin{}, &entity.ExpenseLevel{}, &entity.Expense{}, &entity.User{}, &entity.Period{}, &entity.Income{})
 	expenseLevelDB := database.NewExpenseLevelDB(db)
 	expenseLevelHander := handlers.NewExpenseLevelHandler(expenseLevelDB)
 	expenseOriginDB := database.NewExpenseOriginDB(db)
@@ -53,6 +53,8 @@ func main() {
 	userHandler := handlers.NewUserHandler(database.NewUserDB(db), config.TokenAuth, config.JwtExperesIn)
 	periodDB := database.NewPeriodDB(db)
 	periodHandler := handlers.NewPeriodHandler(periodDB)
+	incomeDB := database.NewIncomeDB(db)
+	incomeHandler := handlers.NewINcomeHandler(incomeDB)
 	routers := chi.NewRouter()
 	routers.Use(middleware.Logger)
 	// routers.Use(middleware.Recoverer)
@@ -111,6 +113,16 @@ func main() {
 		r.Get("/{id}", periodHandler.FindPeriodByID)
 		r.Put("/{id}", periodHandler.UpdatePeriod)
 		r.Delete("/{id}", periodHandler.DeletePeriod)
+	})
+
+	routers.Route("/income", func(r chi.Router) {
+		r.Use(jwtauth.Verifier(config.TokenAuth))
+		r.Use(jwtauth.Authenticator)
+		r.Get("/", incomeHandler.FindAllIncome)
+		r.Post("/", incomeHandler.CreateIncome)
+		r.Get("/{id}", incomeHandler.FindIncomeById)
+		r.Put("/{id}", incomeHandler.UpdateIncome)
+		r.Delete("/{id}", incomeHandler.DeleteIncome)
 	})
 
 	routers.Post("/users", userHandler.CreateUser)

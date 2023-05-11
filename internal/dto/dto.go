@@ -52,3 +52,16 @@ type PeriodInput struct {
 	InitialDate string `json:"initial_date"`
 	FinalDate   string `json:"final_date"`
 }
+
+type IncomeInput struct {
+	Description string  `json:"description"`
+	Value       float64 `json:"value"`
+	Date        string  `json:"date"`
+}
+
+type IncomeOutput struct {
+	ID          string  `json:"id"`
+	Description string  `json:"description"`
+	Value       float64 `json:"value"`
+	Date        string  `json:"date"`
+}
