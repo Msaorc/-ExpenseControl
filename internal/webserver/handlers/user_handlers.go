@@ -90,7 +90,7 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !user.ValidatePassword(userAuthenticate.Password) {
-		handler.SetReturnStatusMessageHandlers(http.StatusUnauthorized, err.Error(), w)
+		handler.SetReturnStatusMessageHandlers(http.StatusUnauthorized, "incorrect password!", w)
 		return
 	}
 	_, token, _ := u.Jwt.Encode(map[string]interface{}{
