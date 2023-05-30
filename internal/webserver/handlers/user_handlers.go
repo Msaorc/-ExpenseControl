@@ -39,29 +39,33 @@ func NewUserHandler(db database.UserInterface, jwt *jwtauth.JWTAuth, jwtExperies
 // @Failure      500  {object}  dto.StatusMessage
 // @Router       /users [post]
 func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	var userInput dto.User
 	err := json.NewDecoder(r.Body).Decode(&userInput)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	user, _ := u.UserDB.FindByEmail(userInput.Email)
 	if user != nil {
+		handler.SetHeader(w, http.StatusAlreadyReported)
 		message := fmt.Sprintf("Já existe um usuário com o email (%s) cadastrado!", userInput.Email)
 		handler.SetReturnStatusMessageHandlers(http.StatusAlreadyReported, message, w)
 		return
 	}
 	user, err = entity.NewUser(userInput.Name, userInput.Email, userInput.Password)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = u.UserDB.Create(user)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusCreated)
 	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "User created successfully.", w)
 }
 
@@ -77,19 +81,21 @@ func (u *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Failure      500  {object}  dto.StatusMessage
 // @Router       /users/authenticate [post]
 func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	var userAuthenticate dto.UserAuthenticate
 	err := json.NewDecoder(r.Body).Decode(&userAuthenticate)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	user, err := u.UserDB.FindByEmail(userAuthenticate.Email)
 	if user == nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	if !user.ValidatePassword(userAuthenticate.Password) {
+		handler.SetHeader(w, http.StatusUnauthorized)
 		handler.SetReturnStatusMessageHandlers(http.StatusUnauthorized, "incorrect password!", w)
 		return
 	}
@@ -102,5 +108,6 @@ func (u *UserHandler) Authenticate(w http.ResponseWriter, r *http.Request) {
 		UserID:      user.ID.String(),
 		AccessToken: token,
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(accessToken)
 }
