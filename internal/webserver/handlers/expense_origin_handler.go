@@ -35,23 +35,26 @@ func NewExpenseOriginHandler(db database.ExpenseOriginInterface) *ExpenseOriginl
 // @Router       /expenseorigin [post]
 // @Security ApiKeyAuth
 func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	var expenseOrigin dto.ExepnseOrigin
 	err := json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expenseOriginEntity, err := entity.NewExpenseOrigin(expenseOrigin.Description)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = eoh.ExpenseOriginDB.Create(expenseOriginEntity)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusCreated)
 	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "ExpenseLevel created successfully.", w)
 }
 
@@ -67,12 +70,13 @@ func (eoh *ExpenseOriginlHandler) CreateExpenseOrigin(w http.ResponseWriter, r *
 // @Router       /expenseorigin [get]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	expensesOrigin, err := eo.ExpenseOriginDB.FindAll()
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(expensesOrigin)
 }
 
@@ -89,17 +93,19 @@ func (eo *ExpenseOriginlHandler) FindAllExpenseOrigin(w http.ResponseWriter, r *
 // @Router       /expenseorigin/{id} [get]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	expenseOrigin, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(expenseOrigin)
 }
 
@@ -117,33 +123,38 @@ func (eo *ExpenseOriginlHandler) FindExpenseOriginById(w http.ResponseWriter, r 
 // @Router       /expenseorigin/{id} [put]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	var expenseOrigin entity.ExpenseOrigin
 	err = json.NewDecoder(r.Body).Decode(&expenseOrigin)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expenseOrigin.ID, err = entityPKG.ParseID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = eo.ExpenseOriginDB.Update(&expenseOrigin)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "ExpenseOrigin updated successfully.", w)
 }
 
@@ -160,21 +171,24 @@ func (eo *ExpenseOriginlHandler) UpdateExpenseOrigin(w http.ResponseWriter, r *h
 // @Router       /expenseorigin/{id} [delete]
 // @Security ApiKeyAuth
 func (eo *ExpenseOriginlHandler) DeleteExpenseOrigin(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := eo.ExpenseOriginDB.FindByID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	err = eo.ExpenseOriginDB.Delete(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Successfully deleted ExpenseOrigin.", w)
 }

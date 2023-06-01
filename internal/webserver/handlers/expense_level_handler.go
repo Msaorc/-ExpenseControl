@@ -35,22 +35,25 @@ func NewExpenseLevelHandler(db database.ExpenseLevelInterface) *ExpenseLevelHand
 // @Router       /expenselevel [post]
 // @Security ApiKeyAuth
 func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	var expenseLevel dto.ExpenseLevel
 	err := json.NewDecoder(r.Body).Decode(&expenseLevel)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusOK, err.Error(), w)
 	}
 	ExpenseLevelEntity, err := entity.NewExpenseLevel(expenseLevel.Description, expenseLevel.Color)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusOK, err.Error(), w)
+		handler.SetHeader(w, http.StatusInternalServerError)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = el.ExpenseLevelDB.Create(ExpenseLevelEntity)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusOK, err.Error(), w)
+		handler.SetHeader(w, http.StatusInternalServerError)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusCreated)
 	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "ExpenseLevel created successfully.", w)
 }
 
@@ -66,12 +69,13 @@ func (el *ExpenseLevelHandler) CreateExpenseLevel(w http.ResponseWriter, r *http
 // @Router       /expenselevel [get]
 // @Security ApiKeyAuth
 func (el *ExpenseLevelHandler) FindAllExpenseLevel(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	expensesLevel, err := el.ExpenseLevelDB.FindAll()
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(expensesLevel)
 }
 
@@ -88,17 +92,19 @@ func (el *ExpenseLevelHandler) FindAllExpenseLevel(w http.ResponseWriter, r *htt
 // @Router       /expenselevel/{id} [get]
 // @Security ApiKeyAuth
 func (el *ExpenseLevelHandler) FindExpenseLevelById(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	expenseOrigin, err := el.ExpenseLevelDB.FindByID(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
+		handler.SetHeader(w, http.StatusInternalServerError)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(expenseOrigin)
 }
 
@@ -116,33 +122,38 @@ func (el *ExpenseLevelHandler) FindExpenseLevelById(w http.ResponseWriter, r *ht
 // @Router       /expenselevel/{id} [put]
 // @Security ApiKeyAuth
 func (el *ExpenseLevelHandler) UpdateExpenseLevel(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := el.ExpenseLevelDB.FindByID(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
+		handler.SetHeader(w, http.StatusNotFound)
+		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	var expenseLevel entity.ExpenseLevel
 	err = json.NewDecoder(r.Body).Decode(&expenseLevel)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expenseLevel.ID, err = entityPKG.ParseID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = el.ExpenseLevelDB.Update(&expenseLevel)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "ExpenseLevel updated successfully.", w)
 }
 
@@ -159,21 +170,24 @@ func (el *ExpenseLevelHandler) UpdateExpenseLevel(w http.ResponseWriter, r *http
 // @Router       /expenselevel/{id} [delete]
 // @Security ApiKeyAuth
 func (el *ExpenseLevelHandler) DeleteExpenseLevel(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := el.ExpenseLevelDB.FindByID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	err = el.ExpenseLevelDB.Delete(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Successfully deleted ExpenseLevel.", w)
 }

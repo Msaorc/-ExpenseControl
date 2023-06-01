@@ -36,23 +36,26 @@ func NewExpenseHandler(db database.ExpenseInterface) *ExpenseHandler {
 // @Router       /expense [post]
 // @Security ApiKeyAuth
 func (e *ExpenseHandler) CreateExpense(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	var expense dto.Expense
 	err := json.NewDecoder(r.Body).Decode(&expense)
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	expenseEntity, err := entity.NewExpense(expense.Description, expense.Value, expense.LevelID, expense.OringID, expense.Note)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = e.ExpenseDB.Create(expenseEntity)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusCreated)
 	handler.SetReturnStatusMessageHandlers(http.StatusCreated, "Expense created successfully.", w)
 }
 
@@ -70,7 +73,6 @@ func (e *ExpenseHandler) CreateExpense(w http.ResponseWriter, r *http.Request) {
 // @Router       /expense [get]
 // @Security ApiKeyAuth
 func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
 	sort := r.URL.Query().Get("sort")
@@ -86,7 +88,8 @@ func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) 
 
 	expenses, err := e.ExpenseDB.FindAll(pageint, limitint, sort)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
+		handler.SetHeader(w, http.StatusInternalServerError)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	var expensesOutput []dto.ExpenseAll
@@ -101,6 +104,7 @@ func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) 
 		}
 		expensesOutput = append(expensesOutput, expense)
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(expensesOutput)
 }
 
@@ -117,17 +121,19 @@ func (e *ExpenseHandler) FindAllExpense(w http.ResponseWriter, r *http.Request) 
 // @Router       /expense/{id} [get]
 // @Security ApiKeyAuth
 func (e *ExpenseHandler) FindExpenseById(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	expense, err := e.ExpenseDB.FindByID(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
+		handler.SetHeader(w, http.StatusInternalServerError)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	json.NewEncoder(w).Encode(expense)
 }
 
@@ -145,33 +151,38 @@ func (e *ExpenseHandler) FindExpenseById(w http.ResponseWriter, r *http.Request)
 // @Router       /expense/{id} [put]
 // @Security ApiKeyAuth
 func (e *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	_, err := e.ExpenseDB.FindByID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
 		return
 	}
 	var expense entity.Expense
 	err = json.NewDecoder(r.Body).Decode(&expense)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	expense.ID, err = entityPKG.ParseID(id)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
 	err = e.ExpenseDB.Update(&expense)
 	if err != nil {
+		handler.SetHeader(w, http.StatusInternalServerError)
 		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Expense updated successfully.", w)
 }
 
@@ -188,16 +199,18 @@ func (e *ExpenseHandler) UpdateExpense(w http.ResponseWriter, r *http.Request) {
 // @Router       /expense/{id} [delete]
 // @Security ApiKeyAuth
 func (e *ExpenseHandler) DeleteExpense(w http.ResponseWriter, r *http.Request) {
-	handler.SetHeader(w, http.StatusOK)
 	id := chi.URLParam(r, "id")
 	if id == "" {
+		handler.SetHeader(w, http.StatusNotFound)
 		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, "invalid ID", w)
 		return
 	}
 	err := e.ExpenseDB.Delete(id)
 	if err != nil {
-		handler.SetReturnStatusMessageHandlers(http.StatusNotFound, err.Error(), w)
+		handler.SetHeader(w, http.StatusInternalServerError)
+		handler.SetReturnStatusMessageHandlers(http.StatusInternalServerError, err.Error(), w)
 		return
 	}
+	handler.SetHeader(w, http.StatusOK)
 	handler.SetReturnStatusMessageHandlers(http.StatusOK, "Successfully deleted expense.", w)
 }
